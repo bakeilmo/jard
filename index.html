@@ -45,6 +45,16 @@ input{font:inherit;font-size:18px;width:100%;padding:12px;border:1px solid var(-
 .ov.mid .btns{flex-direction:column}
 .ov.mid .btns .pri{order:-1;font-size:19px;padding:15px}
 .ov.mid input{font-size:26px;text-align:center}
+
+.ov.kp .sheet{padding:10px 12px calc(10px + env(safe-area-inset-bottom))}
+.kh{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+.kh h2{margin:0}
+.ov.kp .it{margin-bottom:6px;font-size:13px}
+.ov.kp input{font-size:30px;text-align:center;padding:8px;caret-color:transparent;direction:ltr}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0;direction:ltr}
+.pad button{font-size:26px;padding:10px 0;border-radius:10px;background:var(--bg);touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.pad button:active{background:var(--acc2)}
+.ov.kp .big{padding:14px}
 #ovCam{z-index:11;background:none;padding:0!important;align-items:flex-start;pointer-events:none}
 #ovCam .sheet{pointer-events:auto;max-width:none;border-radius:0 0 16px 16px;padding:max(8px,env(safe-area-inset-top)) 12px 10px;box-shadow:0 6px 20px rgba(0,0,0,.35)}
 #ovCam h2{display:none}
@@ -136,27 +146,23 @@ details summary{cursor:pointer;font-weight:600}
 </div></div>
 
 <!-- qty -->
-<div class="ov mid" id="ovQty"><div class="sheet">
-  <h2>الكمية</h2>
+<div class="ov kp" id="ovQty"><div class="sheet">
+  <div class="kh"><h2>الكمية</h2><button class="small" id="qCancel">إلغاء</button></div>
   <div class="it" id="qItem"></div>
-  <input id="qVal" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" placeholder="0">
-  <div class="btns">
-    <button id="qCancel">إلغاء</button>
-    <button class="pri" id="qNext">التالي</button>
-  </div>
+  <input id="qVal" type="text" inputmode="none" readonly autocomplete="off" placeholder="0">
+  <div class="pad" data-for="qVal" data-extra="."></div>
+  <button class="pri big" id="qNext">التالي</button>
 </div></div>
 
 <!-- expiry -->
-<div class="ov mid" id="ovExp"><div class="sheet">
-  <h2>تاريخ الانتهاء</h2>
+<div class="ov kp" id="ovExp"><div class="sheet">
+  <div class="kh"><h2>تاريخ الانتهاء</h2><button class="small" id="eNone">بدون تاريخ</button></div>
   <div class="it" id="eItem"></div>
-  <input id="eVal" type="text" inputmode="numeric" enterkeyhint="done" autocomplete="off" placeholder="يوم/شهر/سنة  أو  شهر/سنة">
-  <div class="msg">أمثلة: 15/03/2027 أو 03/27 (يُحتسب آخر يوم في الشهر) أو 150327</div>
+  <input id="eVal" type="text" inputmode="none" readonly autocomplete="off" placeholder="يوم/شهر/سنة">
+  <div class="msg">مثال: 15/03/2027 أو 0327 (شهر وسنة = آخر يوم في الشهر)</div>
   <div class="msg err" id="eErr"></div>
-  <div class="btns">
-    <button id="eNone">بدون تاريخ</button>
-    <button class="pri" id="eSave">حفظ والمسح التالي</button>
-  </div>
+  <div class="pad" data-for="eVal" data-extra="/"></div>
+  <button class="pri big" id="eSave">حفظ والمسح التالي</button>
 </div></div>
 
 <!-- edit -->
@@ -10814,8 +10820,7 @@ $('list').onclick=e=>{const li=e.target.closest('li[data-id]');if(li)openEdit(li
 // ---------- overlays
 function show(id){document.querySelectorAll('.ov').forEach(o=>o.classList.toggle('on',o.id===id))}
 function showFocus(id,inp){const o=$(id);const cam=document.body.classList.contains('camOn');
-  if(cam&&id!=='ovCam'){const sh=$('ovCam').querySelector('.sheet');o.style.paddingTop=(sh.getBoundingClientRect().bottom+8)+'px'}else if(id!=='ovCam'){o.style.paddingTop=''}
-  o.classList.add('on');const el=$(inp);try{el.focus({preventScroll:true})}catch(e){el.focus()}document.querySelectorAll('.ov').forEach(x=>{if(x!==o&&!(cam&&x.id==='ovCam'))x.classList.remove('on')})}
+  o.classList.add('on');const el=$(inp);if(el&&!el.readOnly&&inp!=='keeper'){try{el.focus({preventScroll:true})}catch(e){el.focus()}}else{try{document.activeElement&&document.activeElement.blur()}catch(e){}}document.querySelectorAll('.ov').forEach(x=>{if(x!==o&&!(cam&&x.id==='ovCam'))x.classList.remove('on')})}
 function hideAll(){document.querySelectorAll('.ov').forEach(o=>o.classList.remove('on'))}
 
 // ---------- scanning
@@ -10967,6 +10972,31 @@ $('btnClear').onclick=()=>{
 $('optAuto').checked=!!opts.auto;$('optBeep').checked=!!opts.beep;
 $('optAuto').onchange=e=>{opts.auto=e.target.checked;LS.set('jm_opts',opts)};
 $('optBeep').onchange=e=>{opts.beep=e.target.checked;LS.set('jm_opts',opts)};
+
+
+// ---------- on-screen number pad (no system keyboard needed)
+document.querySelectorAll('.pad').forEach(p=>{
+  const keys=['1','2','3','4','5','6','7','8','9',p.dataset.extra,'0','⌫'];
+  p.innerHTML=keys.map(k=>'<button type="button" data-k="'+k+'">'+k+'</button>').join('');
+  p.addEventListener('click',e=>{const b=e.target.closest('button');if(b)padKey(p.dataset.for,b.dataset.k)});
+});
+function padKey(id,k){
+  const el=$(id);let v=el.value;
+  if(k==='⌫')v=v.slice(0,-1);
+  else if(k==='.'){if(!v.includes('.'))v=(v||'0')+'.'}
+  else if(k==='/'){if(v&&!v.endsWith('/')&&(v.match(/\//g)||[]).length<2)v+='/'}
+  else{if(id==='qVal'&&v==='0')v='';v+=k}
+  el.value=v.slice(0,14);if(id==='eVal')$('eErr').textContent='';
+}
+// physical / bluetooth keyboard still works while a pad dialog is open
+document.addEventListener('keydown',e=>{
+  const open=$('ovQty').classList.contains('on')?'qVal':$('ovExp').classList.contains('on')?'eVal':null;
+  if(!open||e.target===$('manual'))return;
+  const k=normDigits(e.key);
+  if(/^[0-9]$/.test(k)||k==='.'||k==='/'){padKey(open,k);e.preventDefault()}
+  else if(e.key==='Backspace'){padKey(open,'⌫');e.preventDefault()}
+  else if(e.key==='Enter'){e.preventDefault();open==='qVal'?qtyNext():expSave()}
+});
 
 // ---------- export
 function stamp(){const d=new Date();return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'_'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0')}
