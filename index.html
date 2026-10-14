@@ -40,6 +40,11 @@ input{font:inherit;font-size:18px;width:100%;padding:12px;border:1px solid var(-
 .sheet .it{color:var(--mut);font-size:14px;margin-bottom:12px;overflow-wrap:anywhere}
 .sheet .btns{display:flex;gap:8px;margin-top:12px}
 .sheet .btns button{flex:1}
+.ov.mid{align-items:flex-start;padding:max(14vh,env(safe-area-inset-top)) 16px 0}
+.ov.mid .sheet{border-radius:18px;padding:18px}
+.ov.mid .btns{flex-direction:column}
+.ov.mid .btns .pri{order:-1;font-size:19px;padding:15px}
+.ov.mid input{font-size:26px;text-align:center}
 #cam{position:relative;background:#000;border-radius:12px;overflow:hidden;aspect-ratio:4/3}
 #cam video{width:100%;height:100%;object-fit:cover}
 #cam.ok{outline:4px solid #2ecc71}
@@ -115,7 +120,7 @@ details summary{cursor:pointer;font-weight:600}
 </div></div>
 
 <!-- qty -->
-<div class="ov" id="ovQty"><div class="sheet">
+<div class="ov mid" id="ovQty"><div class="sheet">
   <h2>الكمية</h2>
   <div class="it" id="qItem"></div>
   <input id="qVal" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" placeholder="0">
@@ -126,7 +131,7 @@ details summary{cursor:pointer;font-weight:600}
 </div></div>
 
 <!-- expiry -->
-<div class="ov" id="ovExp"><div class="sheet">
+<div class="ov mid" id="ovExp"><div class="sheet">
   <h2>تاريخ الانتهاء</h2>
   <div class="it" id="eItem"></div>
   <input id="eVal" type="text" inputmode="numeric" enterkeyhint="done" autocomplete="off" placeholder="يوم/شهر/سنة  أو  شهر/سنة">
@@ -139,7 +144,7 @@ details summary{cursor:pointer;font-weight:600}
 </div></div>
 
 <!-- edit -->
-<div class="ov" id="ovEdit"><div class="sheet">
+<div class="ov mid" id="ovEdit"><div class="sheet">
   <h2>تعديل السطر</h2>
   <div class="it" id="xItem"></div>
   <label class="msg">الكمية</label>
@@ -10821,7 +10826,7 @@ async function tick(){
     if(code&&scanning){
       // require the same value twice in a row for 1D codes to avoid misreads
       if(code===lastHit)hits++;else{lastHit=code;hits=1}
-      if(hits>=2||code.length<6||/[^0-9]/.test(code)){scanning=false;lastHit='';hits=0;$('cam').classList.add('ok');setTimeout(()=>{stopCam();$('cam').classList.remove('ok');onCode(code)},120);return}
+      if(hits>=2&&code.length>=4){scanning=false;lastHit='';hits=0;$('cam').classList.add('ok');setTimeout(()=>{stopCam();$('cam').classList.remove('ok');onCode(code)},120);return}
     }
   }
   loopT=setTimeout(tick,90);
