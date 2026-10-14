@@ -42,6 +42,7 @@ input{font:inherit;font-size:18px;width:100%;padding:12px;border:1px solid var(-
 .sheet .btns button{flex:1}
 #cam{position:relative;background:#000;border-radius:12px;overflow:hidden;aspect-ratio:4/3}
 #cam video{width:100%;height:100%;object-fit:cover}
+#cam.ok{outline:4px solid #2ecc71}
 #cam .ln{position:absolute;left:10%;right:10%;top:50%;height:2px;background:#ff4d3a;box-shadow:0 0 8px #ff4d3a}
 .msg{font-size:13px;color:var(--mut);margin-top:8px}
 .err{color:var(--warn)}
@@ -104,7 +105,7 @@ details summary{cursor:pointer;font-weight:600}
 <!-- camera -->
 <div class="ov" id="ovCam"><div class="sheet">
   <h2>وجّه الكاميرا للباركود</h2>
-  <div id="cam"><video id="vid" playsinline muted></video><div class="ln"></div></div>
+  <div id="cam"><video id="vid" playsinline muted autoplay></video><div class="ln"></div><button id="zoomBtn" class="small hide" style="position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,.55);color:#fff;border-color:transparent">تكبير</button></div>
   <div class="msg" id="camMsg"></div>
   <div class="btns">
     <button id="btnPhoto">التقاط صورة بدلاً من ذلك</button>
@@ -10679,6 +10680,7 @@ SC1-30003|100303|تمر صقعي سعودي|حبه||
 |90|اصناف غير متوفرة - مردوده|حبه||
 |91|رسوم توصيل|حبه||
 </script>
+<script src="https://cdn.jsdelivr.net/npm/barcode-detector@3.0.8/dist/iife/ponyfill.js"></script>
 <script src="https://unpkg.com/@zxing/library@0.21.3/umd/index.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
@@ -10780,47 +10782,86 @@ function show(id){document.querySelectorAll('.ov').forEach(o=>o.classList.toggle
 function hideAll(){document.querySelectorAll('.ov').forEach(o=>o.classList.remove('on'))}
 
 // ---------- scanning
-let reader=null, scanning=false;
+let reader=null, scanning=false, stream=null, det=null, loopT=null, camBlocked=false;
+const FORMATS=['ean_13','ean_8','upc_a','upc_e','code_128','code_39','itf','codabar','qr_code','data_matrix'];
+function getDetector(){
+  if(det)return det;
+  try{
+    const BD=(window.BarcodeDetectionAPI&&window.BarcodeDetectionAPI.BarcodeDetector)||window.BarcodeDetector;
+    if(BD)det=new BD({formats:FORMATS});
+  }catch(e){det=null}
+  return det;
+}
 function getReader(){
   if(!window.ZXing)return null;
   if(!reader){
-    const hints=new Map();
-    const F=ZXing.BarcodeFormat;
+    const hints=new Map();const F=ZXing.BarcodeFormat;
     hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,[F.EAN_13,F.EAN_8,F.UPC_A,F.UPC_E,F.CODE_128,F.CODE_39,F.ITF,F.CODABAR,F.QR_CODE,F.DATA_MATRIX]);
     hints.set(ZXing.DecodeHintType.TRY_HARDER,true);
     reader=new ZXing.BrowserMultiFormatReader(hints,250);
   }
   return reader;
 }
-let camBlocked=false;
+const cv=document.createElement('canvas'),cx=cv.getContext('2d',{willReadFrequently:true});
+let lastHit='',hits=0;
+async function tick(){
+  if(!scanning)return;
+  const v=$('vid');
+  if(v.readyState>=2&&v.videoWidth){
+    const W=v.videoWidth,H=v.videoHeight;
+    // centre band (where the red line is): full width-ish, 45% height
+    const cw=Math.round(W*.9),ch=Math.round(H*.45),sx=Math.round((W-cw)/2),sy=Math.round((H-ch)/2);
+    cv.width=cw;cv.height=ch;cx.drawImage(v,sx,sy,cw,ch,0,0,cw,ch);
+    let code=null;
+    try{
+      const d=getDetector();
+      if(d){const r=await d.detect(cv);if(r&&r.length)code=r[0].rawValue}
+      else{const z=getReader();if(z){try{code=z.decodeFromCanvas(cv).getText()}catch(e){}}}
+    }catch(e){}
+    if(code&&scanning){
+      // require the same value twice in a row for 1D codes to avoid misreads
+      if(code===lastHit)hits++;else{lastHit=code;hits=1}
+      if(hits>=2||code.length<6||/[^0-9]/.test(code)){scanning=false;lastHit='';hits=0;$('cam').classList.add('ok');setTimeout(()=>{stopCam();$('cam').classList.remove('ok');onCode(code)},120);return}
+    }
+  }
+  loopT=setTimeout(tick,90);
+}
+async function applyZoom(z){
+  try{const tr=stream&&stream.getVideoTracks()[0];if(!tr)return;const c=tr.getCapabilities?tr.getCapabilities():{};
+    if(c.zoom){z=Math.max(c.zoom.min,Math.min(c.zoom.max,z));await tr.applyConstraints({advanced:[{zoom:z}]});$('zoomBtn').textContent='تكبير '+z+'×';$('zoomBtn').classList.remove('hide')}}catch(e){}
+}
+let zoomLvl=1.5;
 async function openScan(){
   if(camBlocked){hideAll();$('fPhoto').click();return}
   show('ovCam');$('camMsg').textContent='جارٍ تشغيل الكاميرا…';$('camMsg').classList.remove('err');
-  const r=getReader();
-  if(!r){$('camMsg').textContent='مكتبة القراءة لم تُحمّل. استخدم «التقاط صورة» أو اكتب الكود.';return}
-  scanning=true;
   try{
-    await r.decodeFromConstraints({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}},$('vid'),(res,err)=>{
-      if(res&&scanning){scanning=false;stopCam();onCode(res.getText())}
-    });
-    $('camMsg').textContent='ثبّت الباركود على الخط الأحمر';
+    stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}}});
+    const v=$('vid');v.srcObject=stream;await v.play();
+    const tr=stream.getVideoTracks()[0];
+    try{const c=tr.getCapabilities?tr.getCapabilities():{};if(c.focusMode&&c.focusMode.includes('continuous'))await tr.applyConstraints({advanced:[{focusMode:'continuous'}]})}catch(e){}
+    await applyZoom(zoomLvl);
+    scanning=true;lastHit='';hits=0;
+    $('camMsg').textContent='أبعد الجوال قليلاً (15–25 سم) حتى يصبح الباركود واضحاً';
+    tick();
   }catch(e){
-    scanning=false;camBlocked=true;
+    scanning=false;camBlocked=true;stopCam();
     $('camMsg').textContent='تعذّر فتح الكاميرا المباشرة هنا. اضغط «التقاط صورة» — تفتح الكاميرا وتقرأ الباركود من الصورة.';
     $('camMsg').classList.add('err');
   }
 }
-function stopCam(){try{reader&&reader.reset()}catch(e){}}
+function stopCam(){clearTimeout(loopT);try{stream&&stream.getTracks().forEach(t=>t.stop())}catch(e){}stream=null;try{$('vid').srcObject=null}catch(e){}}
 $('btnScan').onclick=openScan;
 $('btnCamClose').onclick=()=>{scanning=false;stopCam();hideAll()};
 $('btnPhoto').onclick=()=>{scanning=false;stopCam();$('fPhoto').click()};
+$('zoomBtn').onclick=()=>{zoomLvl=zoomLvl>=3?1:(zoomLvl>=2?3:(zoomLvl>=1.5?2:1.5));applyZoom(zoomLvl)};
 $('fPhoto').onchange=async e=>{
   const f=e.target.files[0];e.target.value='';if(!f)return;
-  $('camMsg').textContent='جارٍ قراءة الصورة…';
-  const url=URL.createObjectURL(f);
-  try{const r=getReader();const res=await r.decodeFromImageUrl(url);onCode(res.getText())}
-  catch(err){show('ovCam');$('camMsg').textContent='لم أقرأ باركود في الصورة. صوّر الباركود قريباً وواضحاً، أو اكتب الرقم في الخانة.';$('camMsg').classList.add('err')}
-  finally{URL.revokeObjectURL(url)}
+  show('ovCam');$('camMsg').textContent='جارٍ قراءة الصورة…';$('camMsg').classList.remove('err');
+  let code=null;
+  try{const d=getDetector();if(d){const bmp=await createImageBitmap(f);const r=await d.detect(bmp);if(r&&r.length)code=r[0].rawValue}}catch(err){}
+  if(!code){const url=URL.createObjectURL(f);try{const z=getReader();if(z)code=(await z.decodeFromImageUrl(url)).getText()}catch(err){}finally{URL.revokeObjectURL(url)}}
+  if(code){hideAll();onCode(code)}
+  else{$('camMsg').textContent='لم أقرأ باركود في الصورة. صوّر الباركود قريباً وواضحاً، أو اكتب الرقم في الخانة.';$('camMsg').classList.add('err')}
 };
 $('manual').addEventListener('keydown',e=>{if(e.key==='Enter'){const v=normDigits(e.target.value);e.target.value='';if(v)onCode(v)}});
 
