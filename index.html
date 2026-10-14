@@ -1,186 +1,208 @@
 <!doctype html>
 <html lang="ar" dir="rtl"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="جرد المصنعة">
 <meta name="theme-color" content="#0f6e5c">
 <title>جرد المصنعة</title>
 <style>
-:root{--bg:#f6f5f2;--card:#fff;--ink:#1d1d1b;--mut:#6b6a66;--line:#e3e1db;--acc:#0f6e5c;--acc2:#e8f3f0;--warn:#b4462b;--warnbg:#fbece7;}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141413;--card:#1f1f1d;--ink:#f1efe9;--mut:#a3a19b;--line:#33322f;--acc:#3fbf9f;--acc2:#16302a;--warn:#f08a6c;--warnbg:#3a1f17;}}
-:root[data-theme="dark"]{--bg:#141413;--card:#1f1f1d;--ink:#f1efe9;--mut:#a3a19b;--line:#33322f;--acc:#3fbf9f;--acc2:#16302a;--warn:#f08a6c;--warnbg:#3a1f17;}
-*{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"SF Arabic","Segoe UI",Tahoma,sans-serif;-webkit-text-size-adjust:100%}
-body{direction:rtl;padding:12px 16px calc(110px + env(safe-area-inset-bottom))}
-h1{font-size:20px;margin:4px 0 2px}
-.sub{color:var(--mut);font-size:13px;margin-bottom:12px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px}
-.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.stat{flex:1;min-width:90px}
-.stat b{display:block;font-size:22px}
-.stat span{color:var(--mut);font-size:12px}
-button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:10px 14px;cursor:pointer}
-button.pri{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:600}
-button.big{width:100%;font-size:19px;padding:16px}
+:root{--bg:#f4f3ef;--card:#fff;--ink:#1d1d1b;--mut:#6b6a66;--line:#e2e0da;--key:#fff;--keyp:#dcefe9;--acc:#0f6e5c;--acc2:#e3f2ee;--warn:#b4462b;--warnbg:#fbece7;--camH:clamp(150px,34dvh,340px);--keyH:clamp(40px,6.6dvh,60px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111110;--card:#1d1d1b;--ink:#f1efe9;--mut:#a3a19b;--line:#302f2c;--key:#2a2a27;--keyp:#1c3a33;--acc:#33b48f;--acc2:#16302a;--warn:#f08a6c;--warnbg:#3a1f17}}
+:root[data-theme="dark"]{--bg:#111110;--card:#1d1d1b;--ink:#f1efe9;--mut:#a3a19b;--line:#302f2c;--key:#2a2a27;--keyp:#1c3a33;--acc:#33b48f;--acc2:#16302a;--warn:#f08a6c;--warnbg:#3a1f17}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:-apple-system,"SF Arabic","Segoe UI",Tahoma,sans-serif;-webkit-text-size-adjust:100%}
+body{direction:rtl;overflow:hidden;overscroll-behavior:none}
+button{font:inherit;color:inherit;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 12px;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+button.pri{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
 button.dng{color:var(--warn)}
-input{font:inherit;font-size:18px;width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
-.lst{list-style:none;margin:0;padding:0}
-.lst li{border-bottom:1px solid var(--line);padding:10px 0;display:flex;gap:8px;align-items:flex-start}
-.lst li:last-child{border-bottom:0}
-.lst .n{flex:1;min-width:0}
-.lst .nm{font-weight:600;overflow-wrap:anywhere}
-.lst .meta{color:var(--mut);font-size:12px;direction:rtl}
-.lst .q{font-size:18px;font-weight:700;white-space:nowrap}
-.tag{display:inline-block;font-size:11px;padding:1px 6px;border-radius:6px;background:var(--warnbg);color:var(--warn)}
-.bar{position:fixed;bottom:0;left:0;right:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--line)}
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:flex-end;justify-content:center;z-index:10}
-.ov.on{display:flex}
-.sheet{background:var(--card);width:100%;max-width:520px;border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom))}
-.sheet h2{margin:0 0 4px;font-size:18px}
-.sheet .it{color:var(--mut);font-size:14px;margin-bottom:12px;overflow-wrap:anywhere}
-.sheet .btns{display:flex;gap:8px;margin-top:12px}
-.sheet .btns button{flex:1}
-.ov.mid{align-items:flex-start;padding:max(14vh,env(safe-area-inset-top)) 16px 0}
-.ov.mid .sheet{border-radius:18px;padding:18px}
-.ov.mid .btns{flex-direction:column}
-.ov.mid .btns .pri{order:-1;font-size:19px;padding:15px}
-.ov.mid input{font-size:26px;text-align:center}
-
-.ov.kp .sheet{padding:10px 12px calc(10px + env(safe-area-inset-bottom))}
-.kh{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
-.kh h2{margin:0}
-.ov.kp .it{margin-bottom:6px;font-size:13px}
-.ov.kp input{font-size:30px;text-align:center;padding:8px;caret-color:transparent;direction:ltr}
-.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0;direction:ltr}
-.pad button{font-size:26px;padding:10px 0;border-radius:10px;background:var(--bg);touch-action:manipulation;-webkit-user-select:none;user-select:none}
-.pad button:active{background:var(--acc2)}
-.ov.kp .big{padding:14px}
-#ovCam{z-index:11;background:none;padding:0!important;align-items:flex-start;pointer-events:none}
-#ovCam .sheet{pointer-events:auto;max-width:none;border-radius:0 0 16px 16px;padding:max(8px,env(safe-area-inset-top)) 12px 10px;box-shadow:0 6px 20px rgba(0,0,0,.35)}
-#ovCam h2{display:none}
-#cam{aspect-ratio:auto!important;height:24vh}
-#ovCam .msg{margin-top:4px}
-#ovCam .btns{margin-top:6px;flex-direction:row}
-#ovCam .btns button{padding:7px;font-size:14px}
-body.camOn .ov.mid:not(#ovCam) .sheet{padding:12px}
-body.camOn .ov.mid:not(#ovCam) .sheet h2{font-size:15px;margin:0}
-body.camOn .ov.mid:not(#ovCam) .it{font-size:13px;margin-bottom:8px}
-body.camOn .ov.mid:not(#ovCam) input{padding:8px;font-size:22px}
-body.camOn .ov.mid:not(#ovCam) .btns{flex-direction:row;margin-top:8px}
-body.camOn .ov.mid:not(#ovCam) .btns button{padding:11px;font-size:16px}
-body.camOn .ov.mid:not(#ovCam) .btns .pri{flex:2;order:2}
-body.camOn .ov.mid:not(#ovCam) .msg{font-size:11px;margin-top:4px}
-#cam{position:relative;background:#000;border-radius:12px;overflow:hidden;aspect-ratio:4/3}
-#cam video{width:100%;height:100%;object-fit:cover}
-#cam.ok{outline:4px solid #2ecc71}
-#cam .ln{position:absolute;left:10%;right:10%;top:50%;height:2px;background:#ff4d3a;box-shadow:0 0 8px #ff4d3a}
-.msg{font-size:13px;color:var(--mut);margin-top:8px}
-.err{color:var(--warn)}
+input{font:inherit;font-size:16px;width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
 .hide{display:none!important}
-.small{font-size:13px;padding:7px 10px}
-.toast{position:fixed;top:12px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:10px;font-size:14px;z-index:20;opacity:0;transition:opacity .2s;pointer-events:none}
-.toast.on{opacity:1}
+.tag{display:inline-block;font-size:11px;padding:1px 6px;border-radius:6px;background:var(--warnbg);color:var(--warn);font-weight:600}
+
+/* ---------- main scan screen */
+#app{height:100dvh;display:flex;flex-direction:column;padding:env(safe-area-inset-top) 0 0}
+.top{display:flex;align-items:center;gap:8px;padding:8px 12px}
+.top h1{font-size:16px;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip{font-size:13px;padding:6px 10px;border-radius:999px}
+#cam{position:relative;height:var(--camH);margin:0 12px;border-radius:16px;overflow:hidden;background:#000;flex:none}
+#cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#cam .ln{position:absolute;left:8%;right:8%;top:50%;height:2px;background:#ff4d3a;box-shadow:0 0 8px #ff4d3a;transition:opacity .2s}
+#cam.paused .ln{opacity:.25}
+#cam.ok{box-shadow:inset 0 0 0 4px #2ecc71}
+#cam .ctl{position:absolute;bottom:8px;left:8px;right:8px;display:flex;gap:6px;justify-content:space-between;pointer-events:none}
+#cam .ctl button{pointer-events:auto;background:rgba(0,0,0,.55);color:#fff;border-color:transparent;font-size:13px;padding:6px 10px}
+#camMsg{position:absolute;top:8px;left:8px;right:8px;text-align:center;color:#fff;font-size:13px;text-shadow:0 1px 3px #000}
+#camStart{position:absolute;inset:0;display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;color:#fff;background:#000}
+#camStart button{font-size:17px;padding:12px 20px}
+.below{flex:1;min-height:0;padding:10px 12px calc(10px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px}
+#last{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+#last .l1{font-size:12px;color:var(--mut)}
+#last .nm{font-weight:600;margin:2px 0;overflow-wrap:anywhere}
+#last .meta{font-size:13px;color:var(--mut)}
+.hint{color:var(--mut);font-size:13px;text-align:center;margin-top:auto}
+
+/* ---------- entry sheet with number pad */
+#sheet{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-radius:18px 18px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.25);padding:10px 12px calc(10px + env(safe-area-inset-bottom));transform:translateY(105%);transition:transform .18s ease-out;max-width:560px;margin:0 auto}
+#sheet.on{transform:none}
+.sh-h{display:flex;align-items:flex-start;gap:8px}
+.sh-h .t{flex:1;min-width:0}
+.sh-h .step{font-size:12px;color:var(--acc);font-weight:700}
+.sh-h .nm{font-weight:600;font-size:15px;overflow-wrap:anywhere;line-height:1.35}
+.sh-h .sub{font-size:12px;color:var(--mut);direction:rtl}
+.x{width:36px;height:36px;padding:0;border-radius:50%;font-size:18px;flex:none}
+#disp{margin:8px 0 6px;height:clamp(44px,7dvh,58px);display:flex;align-items:center;justify-content:center;border-radius:12px;background:var(--bg);border:2px solid var(--acc);font-size:clamp(26px,4.4dvh,36px);font-weight:600;direction:ltr;letter-spacing:.5px;font-variant-numeric:tabular-nums}
+#disp .ph{color:var(--mut);font-weight:400}
+#disp .dt{display:flex;align-items:center;gap:2px}
+#disp .dg{display:inline-block;min-width:.62em;text-align:center}
+#disp .dg.ph{color:var(--mut);opacity:.5}
+#disp .dg.nx{color:var(--acc);animation:bl 1s steps(1) infinite}
+#disp .dg.fx{color:var(--mut)}
+#disp .sl{color:var(--mut);margin:0 6px}
+#disp .cur{display:inline-block;width:2px;height:1em;background:var(--acc);margin-left:2px;animation:bl 1s steps(1) infinite}
+@keyframes bl{50%{opacity:0}}
+#err{color:var(--warn);font-size:13px;text-align:center;min-height:0}
+#chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+#chips button{font-size:13px;padding:6px 10px;border-radius:999px;background:var(--acc2);border-color:transparent;color:var(--ink)}
+.pad{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:var(--keyH);gap:6px;direction:ltr}
+.pad button{font-size:clamp(20px,3.4dvh,28px);background:var(--key);border:1px solid var(--line);border-radius:12px;padding:0}
+.pad button:active{background:var(--keyp)}
+.pad .ok{grid-column:4;grid-row:2/span 3;background:var(--acc);border-color:var(--acc);color:#fff;font-size:clamp(28px,5dvh,40px)}
+.pad .ok:active{filter:brightness(.9);background:var(--acc)}
+.pad .sm{font-size:15px;color:var(--mut)}
+
+/* ---------- details panel */
+#panel{position:fixed;inset:0;z-index:30;background:var(--bg);display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .2s ease-out;padding-top:env(safe-area-inset-top)}
+#panel.on{transform:none}
+.pbody{flex:1;overflow:auto;padding:0 12px calc(16px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
+.stats{display:flex;gap:8px}
+.stats div{flex:1}.stats b{display:block;font-size:20px}.stats span{font-size:12px;color:var(--mut)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lst{list-style:none;margin:0;padding:0}
+.lst li{border-bottom:1px solid var(--line);padding:10px 0;display:flex;gap:8px}
+.lst li:last-child{border-bottom:0}
+.lst .n{flex:1;min-width:0}.lst .nm{font-weight:600;overflow-wrap:anywhere}
+.lst .meta{color:var(--mut);font-size:12px}
+.lst .q{font-size:18px;font-weight:700}
+.msg{font-size:13px;color:var(--mut)}
+label.opt{display:flex;gap:8px;align-items:center;margin-top:8px}
+label.opt input{width:auto}
 details summary{cursor:pointer;font-weight:600}
+
+/* edit dialog */
+#edit{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.5);display:none;align-items:flex-start;justify-content:center;padding:12vh 16px 0}
+#edit.on{display:flex}
+#edit .box{background:var(--card);border-radius:16px;padding:14px;width:100%;max-width:440px}
+#edit label{display:block;font-size:13px;color:var(--mut);margin:8px 0 4px}
+
+.toast{position:fixed;top:calc(10px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:10px;font-size:14px;z-index:50;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center}
+.toast.on{opacity:1}
+
+@media (min-height:900px){:root{--camH:clamp(200px,40dvh,420px)}}
+@media (max-height:620px){.top{padding:4px 10px}#last .meta{display:none}}
 </style>
 </head><body>
 
-<h1>جرد فرع المصنعة</h1>
-<div class="sub">مسح ← كمية ← تاريخ انتهاء ← المسح التالي. كل مسحة سطر مستقل.</div>
 
-<div class="card row">
-  <div class="stat"><b id="sRows">0</b><span>سطر مجرود</span></div>
-  <div class="stat"><b id="sItems">0</b><span>صنف مختلف</span></div>
-  <div class="stat"><b id="sMaster">0</b><span>صنف في القائمة</span></div>
-</div>
-
-<div class="card">
-  <div class="row">
-    <input id="manual" placeholder="اكتب الباركود أو كود الصنف (أو امسح بقارئ بلوتوث)" inputmode="text" autocomplete="off" style="flex:1">
+<div id="app">
+  <div class="top">
+    <h1>جرد المصنعة</h1>
+    <button class="chip" id="btnPanel">☰ التفاصيل <b id="cnt">0</b></button>
   </div>
-  <div class="msg" id="syncMsg"></div>
-</div>
 
-<div class="card">
-  <div class="row" style="justify-content:space-between;margin-bottom:6px">
-    <b>الأسطر المجرودة</b>
-    <div class="row">
-      <button class="small" id="btnExport">تصدير Excel</button>
-      <button class="small" id="btnCsv">CSV</button>
+  <div id="cam">
+    <video id="vid" playsinline muted autoplay></video>
+    <div class="ln"></div>
+    <div id="camMsg"></div>
+    <div class="ctl">
+      <button id="btnZoom" class="hide">1.5×</button>
+      <button id="btnType">⌨ إدخال يدوي</button>
+    </div>
+    <div id="camStart">
+      <div>اضغط لتشغيل الكاميرا</div>
+      <button class="pri" id="btnStart">📷 ابدأ المسح</button>
+      <button id="btnPhoto" class="hide">التقاط صورة</button>
     </div>
   </div>
-  <input id="filter" placeholder="بحث في الأسطر" style="font-size:15px;padding:9px;margin-bottom:6px">
-  <ul class="lst" id="list"></ul>
-  <div class="msg" id="empty">لا توجد أسطر بعد. اضغط «مسح» للبدء.</div>
-</div>
 
-<div class="card">
-  <details>
-    <summary>قائمة الأصناف والإعدادات</summary>
-    <p class="msg">ملف الأصناف من أونكس (باركود|كود الصنف|الاسم|الوحدة|العبوة|الرصيد الدفتري). يُحفظ على هذا الجهاز.</p>
-    <div class="row">
-      <label class="row" style="flex:1"><button class="small" onclick="document.getElementById('fItems').click()">استيراد ملف الأصناف</button></label>
-      <input type="file" id="fItems" accept=".txt,.csv,text/plain" class="hide">
+  <div class="below">
+    <div id="last" class="hide">
+      <div class="l1">آخر سطر محفوظ</div>
+      <div class="nm" id="lastNm"></div>
+      <div class="meta" id="lastMeta"></div>
     </div>
-    <div class="msg" id="masterInfo"></div>
-    <hr style="border:0;border-top:1px solid var(--line);margin:12px 0">
-    <label class="row"><input type="checkbox" id="optAuto" style="width:auto"> فتح الكاميرا تلقائياً بعد كل حفظ</label>
-    <label class="row" style="margin-top:8px"><input type="checkbox" id="optBeep" style="width:auto"> صوت عند قراءة الباركود</label>
-    <hr style="border:0;border-top:1px solid var(--line);margin:12px 0">
-    <button class="small dng" id="btnClear">مسح كل أسطر الجرد</button>
-  </details>
+    <div class="hint" id="hint">وجّه الكاميرا للباركود من مسافة 15–25 سم</div>
+  </div>
 </div>
 
-<div class="bar"><button class="pri big" id="btnScan">📷 مسح باركود</button></div>
-
-<!-- camera -->
-<div class="ov mid" id="ovCam"><div class="sheet">
-  <h2>وجّه الكاميرا للباركود</h2>
-  <div id="cam"><video id="vid" playsinline muted autoplay></video><div class="ln"></div><button id="zoomBtn" class="small hide" style="position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,.55);color:#fff;border-color:transparent">تكبير</button></div>
-  <div class="msg" id="camMsg"></div>
-  <div class="btns">
-    <button id="btnPhoto">التقاط صورة بدلاً من ذلك</button>
-    <button id="btnCamClose">إغلاق</button>
+<!-- entry sheet -->
+<div id="sheet" aria-live="polite">
+  <div class="sh-h">
+    <div class="t">
+      <div class="step" id="shStep">الكمية</div>
+      <div class="nm" id="shName"></div>
+      <div class="sub" id="shSub"></div>
+    </div>
+    <button class="x" id="shX" aria-label="إلغاء">✕</button>
   </div>
-  <input id="keeper" type="text" inputmode="decimal" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;opacity:0;width:1px;height:1px;padding:0;border:0;font-size:16px;pointer-events:none">
-  <input type="file" id="fPhoto" accept="image/*" capture="environment" class="hide">
-</div></div>
+  <div id="disp"></div>
+  <div id="err"></div>
+  <div id="chips"></div>
+  <div class="pad" id="pad"></div>
+</div>
 
-<!-- qty -->
-<div class="ov kp" id="ovQty"><div class="sheet">
-  <div class="kh"><h2>الكمية</h2><button class="small" id="qCancel">إلغاء</button></div>
-  <div class="it" id="qItem"></div>
-  <input id="qVal" type="text" inputmode="none" readonly autocomplete="off" placeholder="0">
-  <div class="pad" data-for="qVal" data-extra="."></div>
-  <button class="pri big" id="qNext">التالي</button>
-</div></div>
-
-<!-- expiry -->
-<div class="ov kp" id="ovExp"><div class="sheet">
-  <div class="kh"><h2>تاريخ الانتهاء</h2><button class="small" id="eNone">بدون تاريخ</button></div>
-  <div class="it" id="eItem"></div>
-  <input id="eVal" type="text" inputmode="none" readonly autocomplete="off" placeholder="يوم/شهر/سنة">
-  <div class="msg">مثال: 15/03/2027 أو 0327 (شهر وسنة = آخر يوم في الشهر)</div>
-  <div class="msg err" id="eErr"></div>
-  <div class="pad" data-for="eVal" data-extra="/"></div>
-  <button class="pri big" id="eSave">حفظ والمسح التالي</button>
-</div></div>
+<!-- details panel -->
+<div id="panel">
+  <div class="top">
+    <h1>التفاصيل</h1>
+    <button class="chip" id="btnBack">رجوع للمسح ←</button>
+  </div>
+  <div class="pbody">
+    <div class="card stats">
+      <div><b id="sRows">0</b><span>سطر مجرود</span></div>
+      <div><b id="sItems">0</b><span>صنف مختلف</span></div>
+      <div><b id="sQty">0</b><span>مجموع الكميات</span></div>
+    </div>
+    <div class="card">
+      <div class="row">
+        <button class="pri" id="btnExport" style="flex:1">تصدير Excel</button>
+        <button id="btnCsv">CSV</button>
+      </div>
+      <div class="msg" id="syncMsg" style="margin-top:8px"></div>
+    </div>
+    <div class="card">
+      <input id="filter" placeholder="بحث بالاسم أو الكود أو الباركود" style="margin-bottom:6px">
+      <ul class="lst" id="list"></ul>
+      <div class="msg" id="empty">لا توجد أسطر بعد.</div>
+    </div>
+    <div class="card">
+      <details>
+        <summary>الإعدادات وقائمة الأصناف</summary>
+        <label class="opt"><input type="checkbox" id="optBeep"> صوت عند القراءة</label>
+        <label class="opt"><input type="checkbox" id="optOne"> الكمية الافتراضية 1 (اضغط ✓ مباشرة)</label>
+        <p class="msg" id="masterInfo"></p>
+        <button id="btnImport">استيراد ملف أصناف جديد</button>
+        <input type="file" id="fItems" accept=".txt,.csv,text/plain" class="hide">
+        <hr style="border:0;border-top:1px solid var(--line);margin:12px 0">
+        <button class="dng" id="btnClear">مسح كل أسطر الجرد</button>
+        <p class="msg" style="margin-top:12px">إصدار 10</p>
+      </details>
+    </div>
+  </div>
+</div>
 
 <!-- edit -->
-<div class="ov mid" id="ovEdit"><div class="sheet">
-  <h2>تعديل السطر</h2>
-  <div class="it" id="xItem"></div>
-  <label class="msg">الكمية</label>
-  <input id="xQty" type="text" inputmode="decimal">
-  <label class="msg">تاريخ الانتهاء</label>
-  <input id="xExp" type="text" inputmode="numeric" placeholder="يوم/شهر/سنة">
-  <div class="msg err" id="xErr"></div>
-  <div class="btns">
-    <button class="dng" id="xDel">حذف</button>
-    <button id="xCancel">إلغاء</button>
-    <button class="pri" id="xSave">حفظ</button>
-  </div>
+<div id="edit"><div class="box">
+  <div class="sh-h"><div class="t"><div class="nm" id="xName"></div><div class="sub" id="xSub"></div></div><button class="x" id="xClose">✕</button></div>
+  <label>الكمية</label><input id="xQty" inputmode="decimal">
+  <label>تاريخ الانتهاء (يوم/شهر/سنة)</label><input id="xExp" inputmode="numeric">
+  <div id="xErr" style="color:var(--warn);font-size:13px;margin-top:6px"></div>
+  <div class="row" style="margin-top:12px"><button class="dng" id="xDel">حذف</button><span style="flex:1"></span><button class="pri" id="xSave">حفظ</button></div>
 </div></div>
 
+<input type="file" id="fPhoto" accept="image/*" capture="environment" class="hide">
 <div class="toast" id="toast"></div>
 
 <script id="itemsData" type="text/plain">
@@ -10708,357 +10730,317 @@ SC1-30003|100303|تمر صقعي سعودي|حبه||
 |91|رسوم توصيل|حبه||
 </script>
 <script src="https://cdn.jsdelivr.net/npm/barcode-detector@3.0.8/dist/iife/ponyfill.js"></script>
-<script src="https://unpkg.com/@zxing/library@0.21.3/umd/index.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 (function(){
 const $=id=>document.getElementById(id);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
 const W_CODE='3';
-let master=LS.get('jm_master',null); // {byBar:{}, byCode:{}, loadedAt}
-if(!master){const el=document.getElementById('itemsData');if(el&&el.textContent.trim()){master=parseMaster(el.textContent);master.loadedAt='2026-10-15T01:00:00';}}
 let rows=LS.get('jm_rows',[]);
-let opts=LS.get('jm_opts',{auto:true,beep:true});
-let cur=null; // pending entry
-let db=null, dbOk=false;
+let opts=Object.assign({beep:true,one:true},LS.get('jm_opts2',{}));
+let master=null;
 
 // ---------- utils
-function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),1800)}
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),1600)}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
 function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 function normDigits(s){return String(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/٫/g,'.').trim()}
 function fmtDate(iso){if(!iso)return '';const [y,m,d]=iso.split('-');return d+'/'+m+'/'+y}
 function parseExp(raw){
-  let s=normDigits(raw).replace(/[.\-\s]/g,'/');
-  if(!s)return {ok:false};
+  let s=normDigits(raw).replace(/[.\-\s]/g,'/');if(!s)return {ok:false};
   let d,m,y;
-  if(/^\d{6}$/.test(s)){d=s.slice(0,2);m=s.slice(2,4);y=s.slice(4)}
-  else if(/^\d{8}$/.test(s)){d=s.slice(0,2);m=s.slice(2,4);y=s.slice(4)}
+  if(/^\d{8}$/.test(s)||/^\d{6}$/.test(s)){d=s.slice(0,2);m=s.slice(2,4);y=s.slice(4)}
   else if(/^\d{4}$/.test(s)){m=s.slice(0,2);y=s.slice(2)}
-  else{const p=s.split('/').filter(Boolean);if(p.length===3){[d,m,y]=p}else if(p.length===2){[m,y]=p}else return {ok:false}}
+  else{const p=s.split('/').filter(Boolean);if(p.length===3)[d,m,y]=p;else if(p.length===2)[m,y]=p;else return {ok:false}}
   y=+y;m=+m;if(y<100)y+=2000;
   if(!(m>=1&&m<=12)||y<2000||y>2100)return {ok:false};
-  const last=new Date(y,m,0).getDate();
-  d=d==null?last:+d; if(!(d>=1&&d<=last))return {ok:false};
+  const last=new Date(y,m,0).getDate();d=d==null?last:+d;if(!(d>=1&&d<=last))return {ok:false};
   return {ok:true,iso:y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0')};
 }
+function save(){if(!LS.set('jm_rows',rows))toast('تعذّر الحفظ — صدّر الآن')}
+
+// ---------- sound
 let actx=null;
 function unlockAudio(){try{
-  if(navigator.audioSession&&navigator.audioSession.type!=='playback')navigator.audioSession.type='playback'; // play even with the silent switch on
+  if(navigator.audioSession&&navigator.audioSession.type!=='playback')navigator.audioSession.type='playback';
   if(!actx)actx=new (window.AudioContext||window.webkitAudioContext)();
   if(actx.state!=='running')actx.resume();
   const b=actx.createBuffer(1,1,22050),s=actx.createBufferSource();s.buffer=b;s.connect(actx.destination);s.start(0);
 }catch(e){}}
 ['touchend','click','keydown'].forEach(ev=>document.addEventListener(ev,unlockAudio,{capture:true,passive:true}));
-function beep(){if(navigator.vibrate)navigator.vibrate(60);if(!opts.beep)return;try{
-  if(!actx)unlockAudio();if(actx.state!=='running')actx.resume();
-  const t=actx.currentTime,o=actx.createOscillator(),g=actx.createGain();
-  o.type='square';o.frequency.value=1800;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.5,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+.12);
-  o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+.13);
-}catch(e){}}
-function save(){if(!LS.set('jm_rows',rows))toast('تعذّر الحفظ المحلي — صدّر الآن')}
+function tone(f,dur,vol){try{if(!actx)return;if(actx.state!=='running')actx.resume();const t=actx.currentTime,o=actx.createOscillator(),g=actx.createGain();o.type='square';o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+dur+.01)}catch(e){}}
+function beep(){if(navigator.vibrate)navigator.vibrate(50);if(opts.beep)tone(1800,.12,.5)}
+function beepSaved(){if(navigator.vibrate)navigator.vibrate(30);if(opts.beep){tone(1300,.07,.35);setTimeout(()=>tone(1900,.09,.35),80)}}
+function beepErr(){if(navigator.vibrate)navigator.vibrate([60,40,60]);if(opts.beep)tone(300,.2,.5)}
 
-// ---------- master list
-function decodeText(buf){
-  let t=new TextDecoder('utf-8').decode(buf);
-  if(t.includes(String.fromCharCode(0xFFFD))){try{t=new TextDecoder('windows-1256').decode(buf)}catch(e){}}
-  return t.replace(/^﻿/,'');
-}
+// ---------- item master
+function decodeText(buf){let t=new TextDecoder('utf-8').decode(buf);if(t.includes(String.fromCharCode(0xFFFD))){try{t=new TextDecoder('windows-1256').decode(buf)}catch(e){}}return t.replace(/^﻿/,'')}
 function parseMaster(text){
   const byBar={},byCode={};let n=0;
   for(const line of text.split(/\r?\n/)){
-    if(!line.includes('|'))continue;
-    const p=line.split('|').map(x=>x.trim());
-    if(p.length<3)continue;
-    const [bar,code,name,unit,size,bal]=p;
-    if(!code||/^-+$/.test(code)||code==='I_CODE')continue;
+    if(!line.includes('|'))continue;const p=line.split('|').map(x=>x.trim());if(p.length<3)continue;
+    const [bar,code,name,unit,size,bal]=p;if(!code||/^-+$/.test(code)||code==='I_CODE')continue;
     if(!byCode[code]){byCode[code]={c:code,n:name,u:unit||'',b:bal||''};n++}
     if(bar)byBar[bar]={c:code,u:unit||'',s:size||''};
   }
   return {byBar,byCode,count:n,bars:Object.keys(byBar).length,loadedAt:new Date().toISOString()};
 }
-$('fItems').onchange=async e=>{
-  const f=e.target.files[0];if(!f)return;
-  const m=parseMaster(decodeText(await f.arrayBuffer()));
-  if(!m.count){toast('لم أجد أصنافاً في الملف');return}
-  master=m;
-  if(!LS.set('jm_master',master))toast('الملف كبير على ذاكرة المتصفح');
-  // refresh names of existing rows
-  rows.forEach(r=>{const it=lookup(r.bar)||lookup(r.code);if(it){r.code=it.code;r.name=it.name;r.unit=it.unit;r.size=it.size}});
-  save();render();toast('تم تحميل '+m.count+' صنف');e.target.value='';
-};
+master=LS.get('jm_master',null);
+if(!master){const el=$('itemsData');if(el&&el.textContent.trim())master=parseMaster(el.textContent)}
 function lookup(k){
   if(!k||!master)return null;
   const b=master.byBar[k];
-  if(b){const it=master.byCode[b.c]||{};return {code:b.c,name:it.n||'',unit:b.u||it.u||'',size:b.s||'',book:it.b||''}}
-  const it=master.byCode[k];
-  if(it)return {code:it.c,name:it.n,unit:it.u,size:'',book:it.b};
-  // try stripping leading zeros / EAN variants
-  const k2=k.replace(/^0+/,'');
-  for(const cand of [k2,'0'+k]){if(master.byBar[cand])return lookup(cand)}
+  if(b){const it=master.byCode[b.c]||{};return {code:b.c,name:it.n||'',unit:b.u||it.u||'',book:it.b||''}}
+  const it=master.byCode[k];if(it)return {code:it.c,name:it.n,unit:it.u,book:it.b};
+  for(const c of [k.replace(/^0+/,''),'0'+k])if(master.byBar[c])return lookup(c);
   return null;
 }
+$('btnImport').onclick=()=>$('fItems').click();
+$('fItems').onchange=async e=>{const f=e.target.files[0];if(!f)return;const m=parseMaster(decodeText(await f.arrayBuffer()));e.target.value='';
+  if(!m.count)return toast('لم أجد أصنافاً في الملف');master=m;LS.set('jm_master',m);
+  rows.forEach(r=>{const it=lookup(r.bar);if(it){r.code=it.code;r.name=it.name;r.unit=it.unit}});save();render();toast('تم تحميل '+m.count+' صنف')};
 
 // ---------- render
 function render(){
+  $('cnt').textContent=rows.length;
   $('sRows').textContent=rows.length;
   $('sItems').textContent=new Set(rows.map(r=>r.code||r.bar)).size;
-  $('sMaster').textContent=master?master.count:0;
-  $('masterInfo').textContent=master?('محمّل: '+master.count+' صنف، '+master.bars+' باركود — '+new Date(master.loadedAt).toLocaleString('ar')):'لم تُحمّل قائمة الأصناف بعد. يمكنك الجرد بدونها (يُحفظ الباركود فقط).';
+  $('sQty').textContent=+rows.reduce((a,r)=>a+(Number(r.qty)||0),0).toFixed(3);
+  $('masterInfo').textContent=master?('قائمة الأصناف: '+master.count+' صنف، '+master.bars+' باركود.'):'لا توجد قائمة أصناف.';
+  const l=rows[rows.length-1];
+  $('last').classList.toggle('hide',!l);
+  if(l){$('lastNm').innerHTML=l.name?esc(l.name):'<span class="tag">غير معرّف</span> '+esc(l.bar);
+    $('lastMeta').textContent='الكمية '+l.qty+' · انتهاء '+(l.exp?fmtDate(l.exp):'بدون')+(l.code?' · '+l.code:'')}
+  if(!$('panel').classList.contains('on'))return;
   const q=normDigits($('filter').value).toLowerCase();
   const list=rows.slice().reverse().filter(r=>!q||[r.bar,r.code,r.name].join(' ').toLowerCase().includes(q));
   $('empty').classList.toggle('hide',rows.length>0);
-  $('list').innerHTML=list.slice(0,300).map(r=>`<li data-id="${r.id}">
-    <div class="n"><div class="nm">${r.name?esc(r.name):'<span class="tag">غير معرّف</span>'}</div>
-    <div class="meta">${esc(r.code||'—')} · ${esc(r.bar||'')}${r.unit?' · '+esc(r.unit):''}</div>
-    <div class="meta">انتهاء: ${r.exp?fmtDate(r.exp):'بدون'} · ${new Date(r.t).toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'})}</div></div>
-    <div class="q">${esc(r.qty)}</div></li>`).join('')+(list.length>300?'<li class="meta">… يظهر آخر 300 سطر، استخدم البحث</li>':'');
+  $('list').innerHTML=list.slice(0,300).map(r=>`<li data-id="${r.id}"><div class="n"><div class="nm">${r.name?esc(r.name):'<span class="tag">غير معرّف</span>'}</div><div class="meta">${esc(r.code||'—')} · ${esc(r.bar)}${r.unit?' · '+esc(r.unit):''}</div><div class="meta">انتهاء: ${r.exp?fmtDate(r.exp):'بدون'} · ${new Date(r.t).toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'})}</div></div><div class="q">${esc(r.qty)}</div></li>`).join('')+(list.length>300?'<li class="meta">يظهر آخر 300 سطر — استخدم البحث</li>':'');
 }
-$('filter').oninput=render;
-$('list').onclick=e=>{const li=e.target.closest('li[data-id]');if(li)openEdit(li.dataset.id)};
 
-// ---------- overlays
-function show(id){document.querySelectorAll('.ov').forEach(o=>o.classList.toggle('on',o.id===id))}
-function showFocus(id,inp){const o=$(id);const cam=document.body.classList.contains('camOn');
-  o.classList.add('on');const el=$(inp);if(el&&!el.readOnly&&inp!=='keeper'){try{el.focus({preventScroll:true})}catch(e){el.focus()}}else{try{document.activeElement&&document.activeElement.blur()}catch(e){}}document.querySelectorAll('.ov').forEach(x=>{if(x!==o&&!(cam&&x.id==='ovCam'))x.classList.remove('on')})}
-function hideAll(){document.querySelectorAll('.ov').forEach(o=>o.classList.remove('on'))}
-
-// ---------- scanning
-let reader=null, scanning=false, stream=null, det=null, loopT=null, camBlocked=false;
+// ---------- camera
+let stream=null,det=null,scanning=false,loopT=null,camBlocked=false,lastHit='',hits=0,cool={code:'',until:0},zoomLvl=1.5;
 const FORMATS=['ean_13','ean_8','upc_a','upc_e','code_128','code_39','itf','codabar','qr_code','data_matrix'];
-function getDetector(){
+async function getDetector(){
   if(det)return det;
   try{
-    const BD=(window.BarcodeDetectionAPI&&window.BarcodeDetectionAPI.BarcodeDetector)||window.BarcodeDetector;
-    if(BD)det=new BD({formats:FORMATS});
-  }catch(e){det=null}
+    if(window.BarcodeDetector&&BarcodeDetector.getSupportedFormats){const s=await BarcodeDetector.getSupportedFormats();if(s.includes('ean_13')){det=new BarcodeDetector({formats:FORMATS.filter(f=>s.includes(f))});return det}}
+  }catch(e){}
+  try{const P=window.BarcodeDetectionAPI&&window.BarcodeDetectionAPI.BarcodeDetector;if(P)det=new P({formats:FORMATS})}catch(e){}
   return det;
 }
-function getReader(){
-  if(!window.ZXing)return null;
-  if(!reader){
-    const hints=new Map();const F=ZXing.BarcodeFormat;
-    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,[F.EAN_13,F.EAN_8,F.UPC_A,F.UPC_E,F.CODE_128,F.CODE_39,F.ITF,F.CODABAR,F.QR_CODE,F.DATA_MATRIX]);
-    hints.set(ZXing.DecodeHintType.TRY_HARDER,true);
-    reader=new ZXing.BrowserMultiFormatReader(hints,250);
-  }
-  return reader;
-}
 const cv=document.createElement('canvas'),cx=cv.getContext('2d',{willReadFrequently:true});
-let lastHit='',hits=0;
+function camMsg(t){$('camMsg').textContent=t||''}
 async function tick(){
   if(!scanning)return;
   const v=$('vid');
   if(v.readyState>=2&&v.videoWidth){
-    const W=v.videoWidth,H=v.videoHeight;
-    // centre band (where the red line is): full width-ish, 45% height
-    const cw=Math.round(W*.9),ch=Math.round(H*.45),sx=Math.round((W-cw)/2),sy=Math.round((H-ch)/2);
+    const W=v.videoWidth,H=v.videoHeight,cw=Math.round(W*.92),ch=Math.round(Math.min(H,W)*.5),sx=(W-cw)>>1,sy=(H-ch)>>1;
     cv.width=cw;cv.height=ch;cx.drawImage(v,sx,sy,cw,ch,0,0,cw,ch);
-    let code=null;
-    try{
-      const d=getDetector();
-      if(d){const r=await d.detect(cv);if(r&&r.length)code=r[0].rawValue}
-      else{const z=getReader();if(z){try{code=z.decodeFromCanvas(cv).getText()}catch(e){}}}
-    }catch(e){}
-    if(code&&scanning){
-      // require the same value twice in a row for 1D codes to avoid misreads
+    let code=null;try{const d=await getDetector();if(d){const r=await d.detect(cv);if(r&&r.length)code=String(r[0].rawValue||'').trim()}}catch(e){}
+    if(code&&scanning&&code.length>=4&&!(code===cool.code&&Date.now()<cool.until)){
       if(code===lastHit)hits++;else{lastHit=code;hits=1}
-      if(hits>=2&&code.length>=4){scanning=false;lastHit='';hits=0;$('cam').classList.add('ok');setTimeout(()=>{$('cam').classList.remove('ok');$('camMsg').textContent='تمت القراءة ✓';onCode(code)},150);return}
+      if(hits>=2){scanning=false;lastHit='';hits=0;$('cam').classList.add('ok','paused');setTimeout(()=>$('cam').classList.remove('ok'),300);onCode(code);return}
     }
   }
-  loopT=setTimeout(tick,90);
+  loopT=setTimeout(tick,80);
 }
-async function applyZoom(z){
-  try{const tr=stream&&stream.getVideoTracks()[0];if(!tr)return;const c=tr.getCapabilities?tr.getCapabilities():{};
-    if(c.zoom){z=Math.max(c.zoom.min,Math.min(c.zoom.max,z));await tr.applyConstraints({advanced:[{zoom:z}]});$('zoomBtn').textContent='تكبير '+z+'×';$('zoomBtn').classList.remove('hide')}}catch(e){}
+function resume(){
+  cool.until=Date.now()+2500; // don't re-read the same label straight away
+  if(stream&&stream.active){scanning=true;lastHit='';hits=0;$('cam').classList.remove('paused');clearTimeout(loopT);tick();camMsg('')}
 }
-let zoomLvl=1.5;
-async function openScan(){
-  if(camBlocked){hideAll();$('fPhoto').click();return}
-  document.body.classList.add('camOn');showFocus('ovCam','keeper');
-  if(stream&&stream.active){scanning=true;lastHit='';hits=0;$('camMsg').textContent='جاهز — امسح الصنف التالي';$('camMsg').classList.remove('err');clearTimeout(loopT);tick();return}
-  $('camMsg').textContent='جارٍ تشغيل الكاميرا…';$('camMsg').classList.remove('err');
+async function applyZoom(z){try{const tr=stream&&stream.getVideoTracks()[0];const c=tr&&tr.getCapabilities?tr.getCapabilities():{};
+  if(c.zoom){z=Math.max(c.zoom.min,Math.min(c.zoom.max,z));await tr.applyConstraints({advanced:[{zoom:z}]});$('btnZoom').textContent=z+'×';$('btnZoom').classList.remove('hide')}}catch(e){}}
+async function startCam(){
+  if(stream&&stream.active)return resume();
+  camMsg('جارٍ تشغيل الكاميرا…');
   try{
     stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}}});
     const v=$('vid');v.srcObject=stream;await v.play();
     const tr=stream.getVideoTracks()[0];
     try{const c=tr.getCapabilities?tr.getCapabilities():{};if(c.focusMode&&c.focusMode.includes('continuous'))await tr.applyConstraints({advanced:[{focusMode:'continuous'}]})}catch(e){}
     await applyZoom(zoomLvl);
-    scanning=true;lastHit='';hits=0;
-    $('camMsg').textContent='أبعد الجوال قليلاً (15–25 سم) حتى يصبح الباركود واضحاً';
-    tick();
+    $('camStart').classList.add('hide');camMsg('');
+    scanning=true;tick();getDetector();
   }catch(e){
-    scanning=false;camBlocked=true;stopCam();
-    $('camMsg').textContent='تعذّر فتح الكاميرا المباشرة هنا. اضغط «التقاط صورة» — تفتح الكاميرا وتقرأ الباركود من الصورة.';
-    $('camMsg').classList.add('err');
+    camBlocked=true;camMsg('');
+    $('camStart').classList.remove('hide');
+    $('camStart').firstElementChild.textContent='الكاميرا المباشرة غير متاحة هنا';
+    $('btnStart').classList.add('hide');$('btnPhoto').classList.remove('hide');
   }
 }
-function stopCam(){document.body.classList.remove('camOn');scanning=false;clearTimeout(loopT);try{stream&&stream.getTracks().forEach(t=>t.stop())}catch(e){}stream=null;try{$('vid').srcObject=null}catch(e){}}
-$('btnScan').onclick=openScan;
-$('btnCamClose').onclick=()=>{scanning=false;stopCam();hideAll()};
-$('btnPhoto').onclick=()=>{scanning=false;stopCam();$('fPhoto').click()};
-$('zoomBtn').onclick=()=>{zoomLvl=zoomLvl>=3?1:(zoomLvl>=2?3:(zoomLvl>=1.5?2:1.5));applyZoom(zoomLvl)};
-$('fPhoto').onchange=async e=>{
-  const f=e.target.files[0];e.target.value='';if(!f)return;
-  show('ovCam');$('camMsg').textContent='جارٍ قراءة الصورة…';$('camMsg').classList.remove('err');
-  let code=null;
-  try{const d=getDetector();if(d){const bmp=await createImageBitmap(f);const r=await d.detect(bmp);if(r&&r.length)code=r[0].rawValue}}catch(err){}
-  if(!code){const url=URL.createObjectURL(f);try{const z=getReader();if(z)code=(await z.decodeFromImageUrl(url)).getText()}catch(err){}finally{URL.revokeObjectURL(url)}}
-  if(code){hideAll();onCode(code)}
-  else{$('camMsg').textContent='لم أقرأ باركود في الصورة. صوّر الباركود قريباً وواضحاً، أو اكتب الرقم في الخانة.';$('camMsg').classList.add('err')}
-};
-$('manual').addEventListener('keydown',e=>{if(e.key==='Enter'){const v=normDigits(e.target.value);e.target.value='';if(v)onCode(v)}});
+function stopCam(){scanning=false;clearTimeout(loopT);try{stream&&stream.getTracks().forEach(t=>t.stop())}catch(e){}stream=null;$('vid').srcObject=null;$('camStart').classList.remove('hide')}
+$('btnStart').onclick=startCam;
+$('btnZoom').onclick=()=>{zoomLvl=zoomLvl>=3?1:zoomLvl>=2?3:zoomLvl>=1.5?2:1.5;applyZoom(zoomLvl)};
+document.addEventListener('visibilitychange',()=>{if(document.hidden){stopCam()}else if(!camBlocked&&!$('panel').classList.contains('on'))startCam().then(()=>{if(entry)scanning=false})});
+$('btnPhoto').onclick=()=>$('fPhoto').click();
+$('fPhoto').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;let code=null;
+  try{const d=await getDetector();if(d){const r=await d.detect(await createImageBitmap(f));if(r&&r.length)code=r[0].rawValue}}catch(err){}
+  if(code)onCode(code);else{beepErr();toast('لم أقرأ باركود في الصورة — صوّره أقرب وأوضح')}};
 
+// ---------- entry flow: scan → qty → expiry → save
+let entry=null,lastExp='';
 function onCode(code){
   code=String(code).trim();beep();
   const it=lookup(code);
-  cur={id:uid(),bar:code,code:it?it.code:'',name:it?it.name:'',unit:it?it.unit:'',size:it?it.size:'',book:it?it.book:''};
-  $('qItem').innerHTML=(it?'<b>'+esc(it.name)+'</b><br>'+esc(it.code)+(it.unit?' · '+esc(it.unit):''):'<span class="tag">باركود غير موجود في القائمة</span>')+'<br>'+esc(code);
-  $('qVal').value='';showFocus('ovQty','qVal');
+  entry={id:uid(),bar:code,code:it?it.code:'',name:it?it.name:'',unit:it?it.unit:'',step:'qty',val:''};
+  openStep('qty');
 }
-
-// qty
-function qtyNext(){
-  const v=normDigits($('qVal').value);const n=Number(v);
-  if(v===''||!isFinite(n)||n<0){$('qVal').focus();toast('أدخل كمية صحيحة');return}
-  cur.qty=n;
-  $('eItem').innerHTML=$('qItem').innerHTML+'<br>الكمية: <b>'+n+'</b>';
-  $('eVal').value='';$('eErr').textContent='';showFocus('ovExp','eVal');
+function openStep(step){
+  entry.step=step;entry.val='';$('err').textContent='';
+  const e=entry;
+  $('shStep').textContent=step==='qty'?'الكمية':'تاريخ الانتهاء';
+  $('shName').innerHTML=e.name?esc(e.name):'<span class="tag">باركود غير موجود في القائمة</span>';
+  $('shSub').textContent=[e.code,e.bar,e.unit].filter(Boolean).join(' · ')+(step==='exp'?' · الكمية '+e.qty:'');
+  buildPad(step);drawDisp();
+  const ch=$('chips');ch.innerHTML='';
+  if(step==='exp'){
+    if(lastExp)ch.innerHTML+='<button data-c="last">نفس السابق '+fmtDate(lastExp)+'</button>';
+    ch.innerHTML+='<button data-c="none">بدون تاريخ</button><span class="msg" style="align-self:center">لا يوجد يوم؟ اكتب 00</span>';
+  }
+  $('sheet').classList.add('on');
 }
-$('qNext').onclick=qtyNext;
-$('qVal').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();qtyNext()}});
-$('qCancel').onclick=()=>{cur=null;if(document.body.classList.contains('camOn'))openScan();else hideAll()};
+function closeSheet(){entry=null;$('sheet').classList.remove('on')}
+$('chips').onclick=ev=>{const b=ev.target.closest('button');if(!b||!entry)return;if(b.dataset.c==='last')finish(lastExp);else finish('')};
+$('shX').onclick=()=>{closeSheet();resume()};
 
-// expiry
-function commit(exp){
-  cur.exp=exp||'';cur.t=new Date().toISOString();
-  rows.push(cur);save();mirror(cur);
-  toast('حُفظ: '+(cur.name||cur.bar)+' × '+cur.qty);
-  cur=null;render();
-  if(opts.auto)openScan();else{stopCam();hideAll()}
+function buildPad(step){
+  const extra=step==='qty'?'.':'';
+  const keys=[['1'],['2'],['3'],['⌫','sm'],['4'],['5'],['6'],['✓','ok'],['7'],['8'],['9'],[extra,extra?'':'sm'],['0'],['C','sm']];
+  // order in a 4-col grid: 1 2 3 ⌫ / 4 5 6 ✓ / 7 8 9 / . 0 C
+  const grid=[['1'],['2'],['3'],['⌫','sm'],['4'],['5'],['6'],['✓','ok'],['7'],['8'],['9'],[extra||'',''],['0'],['C','sm']];
+  $('pad').innerHTML=grid.map(([k,c])=>k===''?'<span></span>':'<button type="button" class="'+(c||'')+'" data-k="'+k+'">'+(k==='C'?'مسح':k)+'</button>').join('');
 }
-function expSave(){
-  const v=$('eVal').value;const p=parseExp(v);
-  if(!p.ok){$('eErr').textContent='تاريخ غير صحيح';$('eVal').focus();return}
-  commit(p.iso);
-}
-$('eSave').onclick=expSave;
-$('eVal').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();expSave()}});
-$('eNone').onclick=()=>commit('');
-
-// edit
-let editId=null;
-function openEdit(id){
-  const r=rows.find(x=>x.id===id);if(!r)return;editId=id;
-  $('xItem').innerHTML=(r.name?'<b>'+esc(r.name)+'</b><br>':'')+esc(r.code||'')+' · '+esc(r.bar);
-  $('xQty').value=r.qty;$('xExp').value=r.exp?fmtDate(r.exp):'';$('xErr').textContent='';show('ovEdit');
-}
-$('xCancel').onclick=hideAll;
-$('xSave').onclick=()=>{
-  const r=rows.find(x=>x.id===editId);if(!r)return hideAll();
-  const n=Number(normDigits($('xQty').value));if(!isFinite(n)||n<0){$('xErr').textContent='كمية غير صحيحة';return}
-  let exp='';if($('xExp').value.trim()){const p=parseExp($('xExp').value);if(!p.ok){$('xErr').textContent='تاريخ غير صحيح';return}exp=p.iso}
-  r.qty=n;r.exp=exp;save();mirror(r);render();hideAll();
-};
-$('xDel').onclick=()=>{rows=rows.filter(x=>x.id!==editId);save();unmirror(editId);render();hideAll();toast('حُذف السطر')};
-$('btnClear').onclick=()=>{
-  if(!rows.length)return;
-  const b=$('btnClear');
-  if(b.dataset.arm!=='1'){b.dataset.arm='1';b.textContent='اضغط مرة ثانية للتأكيد (صدّر أولاً)';setTimeout(()=>{b.dataset.arm='';b.textContent='مسح كل أسطر الجرد'},4000);return}
-  rows.forEach(r=>unmirror(r.id));rows=[];save();render();b.dataset.arm='';b.textContent='مسح كل أسطر الجرد';toast('تم المسح');
-};
-
-// options
-$('optAuto').checked=!!opts.auto;$('optBeep').checked=!!opts.beep;
-$('optAuto').onchange=e=>{opts.auto=e.target.checked;LS.set('jm_opts',opts)};
-$('optBeep').onchange=e=>{opts.beep=e.target.checked;LS.set('jm_opts',opts)};
-
-
-// ---------- on-screen number pad (no system keyboard needed)
-document.querySelectorAll('.pad').forEach(p=>{
-  const keys=['1','2','3','4','5','6','7','8','9',p.dataset.extra,'0','⌫'];
-  p.innerHTML=keys.map(k=>'<button type="button" data-k="'+k+'">'+k+'</button>').join('');
-  p.addEventListener('click',e=>{const b=e.target.closest('button');if(b)padKey(p.dataset.for,b.dataset.k)});
-});
-function padKey(id,k){
-  const el=$(id);let v=el.value;
+$('pad').addEventListener('pointerdown',ev=>{const b=ev.target.closest('button');if(!b)return;ev.preventDefault();key(b.dataset.k)});
+function key(k){
+  if(!entry)return;$('err').textContent='';
+  let v=entry.val;
+  if(k==='✓')return confirmStep();
   if(k==='⌫')v=v.slice(0,-1);
-  else if(k==='.'){if(!v.includes('.'))v=(v||'0')+'.'}
-  else if(k==='/'){if(v&&!v.endsWith('/')&&(v.match(/\//g)||[]).length<2)v+='/'}
-  else{if(id==='qVal'&&v==='0')v='';v+=k}
-  el.value=v.slice(0,14);if(id==='eVal')$('eErr').textContent='';
+  else if(k==='C')v='';
+  else if(k==='.'){if(entry.step==='qty'&&!v.includes('.'))v=(v||'0')+'.'}
+  else if(/^[0-9]$/.test(k)){if(entry.step==='qty'){if(v==='0')v='';if(v.length<9)v+=k}else if(v.length<6)v+=k}
+  entry.val=v;drawDisp();
 }
-// physical / bluetooth keyboard still works while a pad dialog is open
-document.addEventListener('keydown',e=>{
-  const open=$('ovQty').classList.contains('on')?'qVal':$('ovExp').classList.contains('on')?'eVal':null;
-  if(!open||e.target===$('manual'))return;
-  const k=normDigits(e.key);
-  if(/^[0-9]$/.test(k)||k==='.'||k==='/'){padKey(open,k);e.preventDefault()}
-  else if(e.key==='Backspace'){padKey(open,'⌫');e.preventDefault()}
-  else if(e.key==='Enter'){e.preventDefault();open==='qVal'?qtyNext():expSave()}
+function dateMask(d){if(d.length<=2)return d;if(d.length<=4)return d.slice(0,2)+'/'+d.slice(2);return d.slice(0,2)+'/'+d.slice(2,4)+'/'+d.slice(4)}
+function drawDisp(){
+  const e=entry,v=e.val;let html;
+  if(e.step==='qty')html=v?esc(v):'<span class="ph">'+(opts.one?'1':'0')+'</span>';
+  else{
+    const slot=i=>v[i]!==undefined?'<span class="dg">'+v[i]+'</span>':(i===v.length?'<span class="dg nx">_</span>':'<span class="dg ph">_</span>');
+    html='<span class="dt">'+slot(0)+slot(1)+'<span class="sl">/</span>'+slot(2)+slot(3)+'<span class="sl">/</span><span class="dg fx">2</span><span class="dg fx">0</span>'+slot(4)+slot(5)+'</span>';
+    $('disp').innerHTML=html;return;
+  }
+  $('disp').innerHTML=html+'<span class="cur"></span>';
+}
+function confirmStep(){
+  const e=entry;
+  if(e.step==='qty'){
+    let v=e.val;if(v===''&&opts.one)v='1';
+    const n=Number(v);if(v===''||!isFinite(n)||n<=0){beepErr();$('err').textContent='أدخل الكمية';return}
+    e.qty=n;openStep('exp');return;
+  }
+  const d=e.val;
+  if(d===''){beepErr();$('err').textContent='أدخل التاريخ أو اختر «بدون تاريخ»';return}
+  if(d.length!==6){beepErr();$('err').textContent='أكمل التاريخ: يوم شهر سنة (6 أرقام)';return}
+  const p=d.slice(0,2)==='00'?parseExp(d.slice(2,4)+'/'+d.slice(4)):parseExp(d.slice(0,2)+'/'+d.slice(2,4)+'/'+d.slice(4));
+  if(!p.ok){beepErr();$('err').textContent='تاريخ غير صحيح';return}
+  finish(p.iso);
+}
+function finish(exp){
+  const e=entry;if(!e)return;
+  const r={id:e.id,bar:e.bar,code:e.code,name:e.name,unit:e.unit,qty:e.qty,exp:exp||'',t:new Date().toISOString()};
+  rows.push(r);save();mirror(r);if(exp)lastExp=exp;
+  beepSaved();cool.code=e.bar;closeSheet();render();resume();
+}
+
+// keyboard: number entry while sheet open; bluetooth scanner (fast digits + Enter) otherwise
+let kb='',kbT=0;
+document.addEventListener('keydown',ev=>{
+  if(ev.target.tagName==='INPUT')return;
+  const k=normDigits(ev.key);
+  if(entry){
+    if(/^[0-9]$/.test(k)||k==='.')key(k);
+    else if(ev.key==='Backspace')key('⌫');
+    else if(ev.key==='Enter')key('✓');
+    else if(ev.key==='Escape')$('shX').click();
+    else return;ev.preventDefault();return;
+  }
+  const now=Date.now();if(now-kbT>80)kb='';kbT=now;
+  if(ev.key==='Enter'){if(kb.length>=4){ev.preventDefault();scanning=false;$('cam').classList.add('paused');onCode(kb)}kb=''}
+  else if(ev.key.length===1)kb+=k;
 });
+
+// manual barcode entry
+$('btnType').onclick=()=>{
+  const v=prompt('اكتب الباركود أو كود الصنف');if(!v)return;
+  scanning=false;$('cam').classList.add('paused');onCode(normDigits(v));
+};
+
+// ---------- details panel
+$('btnPanel').onclick=()=>{$('panel').classList.add('on');scanning=false;render()};
+$('btnBack').onclick=()=>{$('panel').classList.remove('on');render();if(!camBlocked){if(stream&&stream.active&&!entry)resume()}};
+$('filter').oninput=render;
+$('list').onclick=ev=>{const li=ev.target.closest('li[data-id]');if(li)openEdit(li.dataset.id)};
+let editId=null;
+function openEdit(id){const r=rows.find(x=>x.id===id);if(!r)return;editId=id;
+  $('xName').innerHTML=r.name?esc(r.name):'<span class="tag">غير معرّف</span>';$('xSub').textContent=[r.code,r.bar].filter(Boolean).join(' · ');
+  $('xQty').value=r.qty;$('xExp').value=r.exp?fmtDate(r.exp):'';$('xErr').textContent='';$('edit').classList.add('on')}
+$('xClose').onclick=()=>$('edit').classList.remove('on');
+$('xSave').onclick=()=>{const r=rows.find(x=>x.id===editId);if(!r)return;
+  const n=Number(normDigits($('xQty').value));if(!isFinite(n)||n<=0){$('xErr').textContent='كمية غير صحيحة';return}
+  let exp='';if($('xExp').value.trim()){const p=parseExp($('xExp').value);if(!p.ok){$('xErr').textContent='تاريخ غير صحيح';return}exp=p.iso}
+  r.qty=n;r.exp=exp;save();mirror(r);render();$('edit').classList.remove('on')};
+$('xDel').onclick=()=>{if($('xDel').dataset.arm!=='1'){$('xDel').dataset.arm='1';$('xDel').textContent='تأكيد الحذف';setTimeout(()=>{$('xDel').dataset.arm='';$('xDel').textContent='حذف'},3000);return}
+  rows=rows.filter(x=>x.id!==editId);save();unmirror(editId);render();$('edit').classList.remove('on');$('xDel').dataset.arm='';$('xDel').textContent='حذف';toast('حُذف السطر')};
+$('btnClear').onclick=()=>{const b=$('btnClear');if(!rows.length)return;
+  if(b.dataset.arm!=='1'){b.dataset.arm='1';b.textContent='اضغط مرة ثانية للتأكيد (صدّر أولاً)';setTimeout(()=>{b.dataset.arm='';b.textContent='مسح كل أسطر الجرد'},4000);return}
+  rows.forEach(r=>unmirror(r.id));rows=[];save();render();b.dataset.arm='';b.textContent='مسح كل أسطر الجرد';toast('تم المسح')};
+$('optBeep').checked=!!opts.beep;$('optOne').checked=!!opts.one;
+$('optBeep').onchange=e=>{opts.beep=e.target.checked;LS.set('jm_opts2',opts)};
+$('optOne').onchange=e=>{opts.one=e.target.checked;LS.set('jm_opts2',opts)};
 
 // ---------- export
-function stamp(){const d=new Date();return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'_'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0')}
-function detailAoa(){
-  const h=['I_CODE','W_CODE','I_QTY','EXPIRE_DATE','BARCODE','UNIT','I_NAME','SCAN_TIME'];
-  return [h,...rows.map(r=>[r.code||'',W_CODE,r.qty,r.exp?fmtDate(r.exp):'',r.bar,r.unit||'',r.name||'',new Date(r.t).toLocaleString('en-GB')])];
+function stamp(){const d=new Date(),p=n=>String(n).padStart(2,'0');return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'_'+p(d.getHours())+p(d.getMinutes())}
+function detailAoa(){return [['I_CODE','W_CODE','I_QTY','EXPIRE_DATE','BARCODE','UNIT','I_NAME','SCAN_TIME'],...rows.map(r=>[r.code||'',W_CODE,r.qty,r.exp?fmtDate(r.exp):'',r.bar,r.unit||'',r.name||'',new Date(r.t).toLocaleString('en-GB')])]}
+function summaryAoa(){const m={};
+  rows.forEach(r=>{const k=r.code||('?'+r.bar);(m[k]=m[k]||{code:r.code||'',bar:r.code?'':r.bar,name:r.name||'',qty:0,book:''}).qty+=Number(r.qty)||0;if(r.code&&master&&master.byCode[r.code])m[k].book=master.byCode[r.code].b});
+  return [['I_CODE','BARCODE (غير معرّف)','I_NAME','الكمية المجرودة','الرصيد الدفتري','الفرق'],...Object.values(m).map(x=>{const b=x.book===''?'':Number(x.book);return [x.code,x.bar,x.name,x.qty,b,b===''?'':x.qty-b]})]}
+async function deliver(filename,blob){
+  try{const dl=window.claude&&window.claude.use?await Promise.race([window.claude.use('downloads'),new Promise(r=>setTimeout(()=>r(null),3000))]):null;
+    if(dl){await dl.save({filename,data:blob});return}}catch(e){if(e&&e.code&&e.code!=='unavailable'){toast('لم يُحفظ الملف');return}}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();a.remove();
 }
-function summaryAoa(){
-  const m={};
-  rows.forEach(r=>{const k=r.code||('?'+r.bar);(m[k]=m[k]||{code:r.code||'',bar:r.code?'':r.bar,name:r.name||'',qty:0,book:''}).qty+=Number(r.qty)||0;
-    if(r.code&&master&&master.byCode[r.code])m[k].book=master.byCode[r.code].b});
-  return [['I_CODE','BARCODE (غير معرّف)','I_NAME','الكمية المجرودة','الرصيد الدفتري','الفرق'],
-    ...Object.values(m).map(x=>{const b=x.book===''?'':Number(x.book);return [x.code,x.bar,x.name,x.qty,b,b===''?'':x.qty-b]})];
-}
-async function deliver(filename,data){
-  try{const dl=await Promise.race([window.claude&&window.claude.use?window.claude.use('downloads'):null,new Promise(r=>setTimeout(()=>r(null),3000))]);
-    if(dl){await dl.save({filename,data});return}}catch(e){if(e&&e.code&&e.code!=='unavailable'){toast('لم يُحفظ الملف');return}}
-  const blob=data instanceof Blob?data:new Blob([data]);const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();a.remove();
-}
-$('btnExport').onclick=()=>{
+let xlsxP=null;function loadXlsx(){return xlsxP||(xlsxP=new Promise((res,rej)=>{if(window.XLSX)return res();const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)}))}
+$('btnExport').onclick=async()=>{
   if(!rows.length)return toast('لا توجد أسطر');
-  if(!window.XLSX)return toast('مكتبة Excel لم تُحمّل، استخدم CSV');
-  const wb=XLSX.utils.book_new();
-  const ws1=XLSX.utils.aoa_to_sheet(detailAoa());
-  // keep codes/barcodes as text
-  const ref=XLSX.utils.decode_range(ws1['!ref']);
-  for(let R=1;R<=ref.e.r;R++){for(const C of [0,1,4]){const a=XLSX.utils.encode_cell({r:R,c:C});if(ws1[a]){ws1[a].t='s';ws1[a].v=String(ws1[a].v)}}}
-  ws1['!cols']=[{wch:22},{wch:7},{wch:9},{wch:12},{wch:16},{wch:8},{wch:40},{wch:20}];
-  XLSX.utils.book_append_sheet(wb,ws1,'تفصيلي');
-  const ws2=XLSX.utils.aoa_to_sheet(summaryAoa());
-  ws2['!cols']=[{wch:22},{wch:16},{wch:40},{wch:12},{wch:12},{wch:10}];
-  XLSX.utils.book_append_sheet(wb,ws2,'إجمالي حسب الصنف');
-  const out=XLSX.write(wb,{bookType:'biff8',type:'array'});
-  deliver('jard_masnaa_'+stamp()+'.xls',new Blob([out],{type:'application/vnd.ms-excel'}));
+  try{await loadXlsx()}catch(e){return toast('تعذّر تحميل Excel — استخدم CSV')}
+  const wb=XLSX.utils.book_new(),ws1=XLSX.utils.aoa_to_sheet(detailAoa()),ref=XLSX.utils.decode_range(ws1['!ref']);
+  for(let R=1;R<=ref.e.r;R++)for(const C of [0,1,4]){const a=XLSX.utils.encode_cell({r:R,c:C});if(ws1[a]){ws1[a].t='s';ws1[a].v=String(ws1[a].v)}}
+  ws1['!cols']=[{wch:22},{wch:7},{wch:9},{wch:12},{wch:16},{wch:8},{wch:40},{wch:20}];XLSX.utils.book_append_sheet(wb,ws1,'تفصيلي');
+  const ws2=XLSX.utils.aoa_to_sheet(summaryAoa());ws2['!cols']=[{wch:22},{wch:16},{wch:40},{wch:12},{wch:12},{wch:10}];XLSX.utils.book_append_sheet(wb,ws2,'إجمالي حسب الصنف');
+  deliver('jard_masnaa_'+stamp()+'.xls',new Blob([XLSX.write(wb,{bookType:'biff8',type:'array'})],{type:'application/vnd.ms-excel'}));
 };
-$('btnCsv').onclick=()=>{
-  if(!rows.length)return toast('لا توجد أسطر');
+$('btnCsv').onclick=()=>{if(!rows.length)return toast('لا توجد أسطر');
   const csv='﻿'+detailAoa().map(r=>r.map(v=>{v=String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(',')).join('\r\n');
-  deliver('jard_masnaa_'+stamp()+'.csv',new Blob([csv],{type:'text/csv'}));
-};
+  deliver('jard_masnaa_'+stamp()+'.csv',new Blob([csv],{type:'text/csv'}))};
 
-// ---------- cloud mirror (best effort; keeps a copy if Safari data is cleared)
+// ---------- cloud copy (only inside Claude)
+let db=null,dbOk=false;
 async function mirror(r){if(!dbOk)return;try{await db.doc('counts/'+r.id).set({bar:r.bar,code:r.code||'',name:r.name||'',unit:r.unit||'',qty:r.qty,exp:r.exp||'',t:r.t,w:W_CODE})}catch(e){setSync(false)}}
 async function unmirror(id){if(!dbOk)return;try{await db.doc('counts/'+id).delete()}catch(e){}}
-function setSync(ok){dbOk=ok;$('syncMsg').textContent=ok?'✓ نسخة احتياطية سحابية مفعّلة':'الحفظ على هذا الجهاز فقط — صدّر الملف بانتظام';}
+function setSync(ok){dbOk=ok;$('syncMsg').textContent=ok?'✓ نسخة احتياطية سحابية مفعّلة':'الحفظ على هذا الجهاز فقط — صدّر الملف بعد كل جلسة'}
 setSync(false);
-(async()=>{
-  try{
-    if(!window.claude||!window.claude.use)return;
-    db=await window.claude.use('db');if(!db)return;
-    const snap=await db.collection('counts').get();
-    const remote=(snap.docs||snap||[]).map(d=>({id:d.id,...(d.data?d.data():d)}));
-    const have=new Set(rows.map(r=>r.id));let added=0;
-    remote.forEach(r=>{if(!have.has(r.id)&&r.bar!=null){rows.push({id:r.id,bar:r.bar,code:r.code,name:r.name,unit:r.unit,qty:r.qty,exp:r.exp,t:r.t});added++}});
-    if(added){rows.sort((a,b)=>a.t<b.t?-1:1);save();render();toast('استُرجع '+added+' سطر من النسخة السحابية')}
-    setSync(true);
-    const remoteIds=new Set(remote.map(r=>r.id));
-    rows.filter(r=>!remoteIds.has(r.id)).forEach(mirror);
-  }catch(e){setSync(false)}
-})();
+(async()=>{try{if(!window.claude||!window.claude.use)return;db=await window.claude.use('db');if(!db)return;
+  const snap=await db.collection('counts').get();const remote=(snap.docs||[]).map(d=>({id:d.id,...d.data()}));
+  const have=new Set(rows.map(r=>r.id));let added=0;remote.forEach(r=>{if(!have.has(r.id)&&r.bar!=null){rows.push({id:r.id,bar:r.bar,code:r.code,name:r.name,unit:r.unit,qty:r.qty,exp:r.exp,t:r.t});added++}});
+  if(added){rows.sort((a,b)=>a.t<b.t?-1:1);save();render();toast('استُرجع '+added+' سطر')}
+  setSync(true);const ids=new Set(remote.map(r=>r.id));rows.filter(r=>!ids.has(r.id)).forEach(mirror);
+}catch(e){setSync(false)}})();
 
 render();
+// try to start the camera straight away; if the browser needs a tap, the start button stays visible
+startCam();
 })();
 </script>
+
 </body></html>
