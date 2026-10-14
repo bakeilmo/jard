@@ -45,6 +45,21 @@ input{font:inherit;font-size:18px;width:100%;padding:12px;border:1px solid var(-
 .ov.mid .btns{flex-direction:column}
 .ov.mid .btns .pri{order:-1;font-size:19px;padding:15px}
 .ov.mid input{font-size:26px;text-align:center}
+#ovCam{z-index:11;background:none;padding:0!important;align-items:flex-start;pointer-events:none}
+#ovCam .sheet{pointer-events:auto;max-width:none;border-radius:0 0 16px 16px;padding:max(8px,env(safe-area-inset-top)) 12px 10px;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+#ovCam h2{display:none}
+#cam{aspect-ratio:auto!important;height:24vh}
+#ovCam .msg{margin-top:4px}
+#ovCam .btns{margin-top:6px;flex-direction:row}
+#ovCam .btns button{padding:7px;font-size:14px}
+body.camOn .ov.mid:not(#ovCam) .sheet{padding:12px}
+body.camOn .ov.mid:not(#ovCam) .sheet h2{font-size:15px;margin:0}
+body.camOn .ov.mid:not(#ovCam) .it{font-size:13px;margin-bottom:8px}
+body.camOn .ov.mid:not(#ovCam) input{padding:8px;font-size:22px}
+body.camOn .ov.mid:not(#ovCam) .btns{flex-direction:row;margin-top:8px}
+body.camOn .ov.mid:not(#ovCam) .btns button{padding:11px;font-size:16px}
+body.camOn .ov.mid:not(#ovCam) .btns .pri{flex:2;order:2}
+body.camOn .ov.mid:not(#ovCam) .msg{font-size:11px;margin-top:4px}
 #cam{position:relative;background:#000;border-radius:12px;overflow:hidden;aspect-ratio:4/3}
 #cam video{width:100%;height:100%;object-fit:cover}
 #cam.ok{outline:4px solid #2ecc71}
@@ -108,7 +123,7 @@ details summary{cursor:pointer;font-weight:600}
 <div class="bar"><button class="pri big" id="btnScan">📷 مسح باركود</button></div>
 
 <!-- camera -->
-<div class="ov" id="ovCam"><div class="sheet">
+<div class="ov mid" id="ovCam"><div class="sheet">
   <h2>وجّه الكاميرا للباركود</h2>
   <div id="cam"><video id="vid" playsinline muted autoplay></video><div class="ln"></div><button id="zoomBtn" class="small hide" style="position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,.55);color:#fff;border-color:transparent">تكبير</button></div>
   <div class="msg" id="camMsg"></div>
@@ -116,6 +131,7 @@ details summary{cursor:pointer;font-weight:600}
     <button id="btnPhoto">التقاط صورة بدلاً من ذلك</button>
     <button id="btnCamClose">إغلاق</button>
   </div>
+  <input id="keeper" type="text" inputmode="decimal" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;opacity:0;width:1px;height:1px;padding:0;border:0;font-size:16px;pointer-events:none">
   <input type="file" id="fPhoto" accept="image/*" capture="environment" class="hide">
 </div></div>
 
@@ -10797,6 +10813,9 @@ $('list').onclick=e=>{const li=e.target.closest('li[data-id]');if(li)openEdit(li
 
 // ---------- overlays
 function show(id){document.querySelectorAll('.ov').forEach(o=>o.classList.toggle('on',o.id===id))}
+function showFocus(id,inp){const o=$(id);const cam=document.body.classList.contains('camOn');
+  if(cam&&id!=='ovCam'){const sh=$('ovCam').querySelector('.sheet');o.style.paddingTop=(sh.getBoundingClientRect().bottom+8)+'px'}else if(id!=='ovCam'){o.style.paddingTop=''}
+  o.classList.add('on');const el=$(inp);try{el.focus({preventScroll:true})}catch(e){el.focus()}document.querySelectorAll('.ov').forEach(x=>{if(x!==o&&!(cam&&x.id==='ovCam'))x.classList.remove('on')})}
 function hideAll(){document.querySelectorAll('.ov').forEach(o=>o.classList.remove('on'))}
 
 // ---------- scanning
@@ -10839,7 +10858,7 @@ async function tick(){
     if(code&&scanning){
       // require the same value twice in a row for 1D codes to avoid misreads
       if(code===lastHit)hits++;else{lastHit=code;hits=1}
-      if(hits>=2&&code.length>=4){scanning=false;lastHit='';hits=0;$('cam').classList.add('ok');setTimeout(()=>{stopCam();$('cam').classList.remove('ok');onCode(code)},120);return}
+      if(hits>=2&&code.length>=4){scanning=false;lastHit='';hits=0;$('cam').classList.add('ok');setTimeout(()=>{$('cam').classList.remove('ok');$('camMsg').textContent='تمت القراءة ✓';onCode(code)},150);return}
     }
   }
   loopT=setTimeout(tick,90);
@@ -10851,7 +10870,9 @@ async function applyZoom(z){
 let zoomLvl=1.5;
 async function openScan(){
   if(camBlocked){hideAll();$('fPhoto').click();return}
-  show('ovCam');$('camMsg').textContent='جارٍ تشغيل الكاميرا…';$('camMsg').classList.remove('err');
+  document.body.classList.add('camOn');showFocus('ovCam','keeper');
+  if(stream&&stream.active){scanning=true;lastHit='';hits=0;$('camMsg').textContent='جاهز — امسح الصنف التالي';$('camMsg').classList.remove('err');clearTimeout(loopT);tick();return}
+  $('camMsg').textContent='جارٍ تشغيل الكاميرا…';$('camMsg').classList.remove('err');
   try{
     stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}}});
     const v=$('vid');v.srcObject=stream;await v.play();
@@ -10867,7 +10888,7 @@ async function openScan(){
     $('camMsg').classList.add('err');
   }
 }
-function stopCam(){clearTimeout(loopT);try{stream&&stream.getTracks().forEach(t=>t.stop())}catch(e){}stream=null;try{$('vid').srcObject=null}catch(e){}}
+function stopCam(){document.body.classList.remove('camOn');scanning=false;clearTimeout(loopT);try{stream&&stream.getTracks().forEach(t=>t.stop())}catch(e){}stream=null;try{$('vid').srcObject=null}catch(e){}}
 $('btnScan').onclick=openScan;
 $('btnCamClose').onclick=()=>{scanning=false;stopCam();hideAll()};
 $('btnPhoto').onclick=()=>{scanning=false;stopCam();$('fPhoto').click()};
@@ -10888,7 +10909,7 @@ function onCode(code){
   const it=lookup(code);
   cur={id:uid(),bar:code,code:it?it.code:'',name:it?it.name:'',unit:it?it.unit:'',size:it?it.size:'',book:it?it.book:''};
   $('qItem').innerHTML=(it?'<b>'+esc(it.name)+'</b><br>'+esc(it.code)+(it.unit?' · '+esc(it.unit):''):'<span class="tag">باركود غير موجود في القائمة</span>')+'<br>'+esc(code);
-  $('qVal').value='';show('ovQty');setTimeout(()=>$('qVal').focus(),60);
+  $('qVal').value='';showFocus('ovQty','qVal');
 }
 
 // qty
@@ -10897,11 +10918,11 @@ function qtyNext(){
   if(v===''||!isFinite(n)||n<0){$('qVal').focus();toast('أدخل كمية صحيحة');return}
   cur.qty=n;
   $('eItem').innerHTML=$('qItem').innerHTML+'<br>الكمية: <b>'+n+'</b>';
-  $('eVal').value='';$('eErr').textContent='';show('ovExp');setTimeout(()=>$('eVal').focus(),60);
+  $('eVal').value='';$('eErr').textContent='';showFocus('ovExp','eVal');
 }
 $('qNext').onclick=qtyNext;
 $('qVal').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();qtyNext()}});
-$('qCancel').onclick=()=>{cur=null;hideAll()};
+$('qCancel').onclick=()=>{cur=null;if(document.body.classList.contains('camOn'))openScan();else hideAll()};
 
 // expiry
 function commit(exp){
@@ -10909,7 +10930,7 @@ function commit(exp){
   rows.push(cur);save();mirror(cur);
   toast('حُفظ: '+(cur.name||cur.bar)+' × '+cur.qty);
   cur=null;render();
-  if(opts.auto)openScan();else hideAll();
+  if(opts.auto)openScan();else{stopCam();hideAll()}
 }
 function expSave(){
   const v=$('eVal').value;const p=parseExp(v);
