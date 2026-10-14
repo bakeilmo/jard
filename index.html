@@ -10720,7 +10720,20 @@ function parseExp(raw){
   d=d==null?last:+d; if(!(d>=1&&d<=last))return {ok:false};
   return {ok:true,iso:y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0')};
 }
-function beep(){if(!opts.beep)return;try{const a=new (window.AudioContext||window.webkitAudioContext)();const o=a.createOscillator(),g=a.createGain();o.frequency.value=1500;g.gain.value=.15;o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+.09)}catch(e){}if(navigator.vibrate)navigator.vibrate(60)}
+let actx=null;
+function unlockAudio(){try{
+  if(navigator.audioSession&&navigator.audioSession.type!=='playback')navigator.audioSession.type='playback'; // play even with the silent switch on
+  if(!actx)actx=new (window.AudioContext||window.webkitAudioContext)();
+  if(actx.state!=='running')actx.resume();
+  const b=actx.createBuffer(1,1,22050),s=actx.createBufferSource();s.buffer=b;s.connect(actx.destination);s.start(0);
+}catch(e){}}
+['touchend','click','keydown'].forEach(ev=>document.addEventListener(ev,unlockAudio,{capture:true,passive:true}));
+function beep(){if(navigator.vibrate)navigator.vibrate(60);if(!opts.beep)return;try{
+  if(!actx)unlockAudio();if(actx.state!=='running')actx.resume();
+  const t=actx.currentTime,o=actx.createOscillator(),g=actx.createGain();
+  o.type='square';o.frequency.value=1800;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.5,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+.12);
+  o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+.13);
+}catch(e){}}
 function save(){if(!LS.set('jm_rows',rows))toast('تعذّر الحفظ المحلي — صدّر الآن')}
 
 // ---------- master list
