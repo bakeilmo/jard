@@ -64,6 +64,9 @@ input{font:inherit;font-size:16px;width:100%;padding:10px 12px;border:1px solid 
 @keyframes bl{50%{opacity:0}}
 #err{color:var(--warn);font-size:13px;text-align:center;min-height:0}
 #chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+#chips .sug{display:block;width:100%;text-align:right;border-radius:10px;background:var(--bg);border:1px solid var(--line);padding:7px 10px}
+#chips .sug b{display:block;font-size:14px;font-weight:600;overflow-wrap:anywhere}
+#chips .sug span{font-size:12px;color:var(--mut)}
 #chips button{font-size:13px;padding:6px 10px;border-radius:999px;background:var(--acc2);border-color:transparent;color:var(--ink)}
 .pad{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:var(--keyH);gap:6px;direction:ltr}
 .pad button{font-size:clamp(20px,3.4dvh,28px);background:var(--key);border:1px solid var(--line);border-radius:12px;padding:0}
@@ -149,6 +152,7 @@ details summary{cursor:pointer;font-weight:600}
   </div>
   <div id="disp"></div>
   <div id="err"></div>
+  <input id="nameQ" class="hide" placeholder="اكتب جزءاً من اسم الصنف" autocomplete="off" style="margin-bottom:6px">
   <div id="chips"></div>
   <div class="pad" id="pad"></div>
 </div>
@@ -187,7 +191,7 @@ details summary{cursor:pointer;font-weight:600}
         <input type="file" id="fItems" accept=".txt,.csv,text/plain" class="hide">
         <hr style="border:0;border-top:1px solid var(--line);margin:12px 0">
         <button class="dng" id="btnClear">مسح كل أسطر الجرد</button>
-        <p class="msg" style="margin-top:12px">إصدار 10</p>
+        <p class="msg" style="margin-top:12px">إصدار 11</p>
       </details>
     </div>
   </div>
@@ -10888,11 +10892,14 @@ function onCode(code){
 function openStep(step){
   entry.step=step;entry.val='';$('err').textContent='';
   const e=entry;
-  $('shStep').textContent=step==='qty'?'الكمية':'تاريخ الانتهاء';
-  $('shName').innerHTML=e.name?esc(e.name):'<span class="tag">باركود غير موجود في القائمة</span>';
-  $('shSub').textContent=[e.code,e.bar,e.unit].filter(Boolean).join(' · ')+(step==='exp'?' · الكمية '+e.qty:'');
+  $('nameQ').classList.add('hide');$('pad').classList.remove('hide');$('disp').classList.remove('hide');
+  $('shStep').textContent=step==='qty'?'الكمية':step==='exp'?'تاريخ الانتهاء':'إدخال يدوي';
+  if(step==='bar'){$('shName').textContent='اكتب الباركود أو كود الصنف';$('shSub').textContent='أو ابحث بالاسم'}
+  else{$('shName').innerHTML=e.name?esc(e.name):'<span class="tag">باركود غير موجود في القائمة</span>';
+  $('shSub').textContent=[e.code,e.bar,e.unit].filter(Boolean).join(' · ')+(step==='exp'?' · الكمية '+e.qty:'')}
   buildPad(step);drawDisp();
   const ch=$('chips');ch.innerHTML='';
+  if(step==='bar')suggest();
   if(step==='exp'){
     if(lastExp)ch.innerHTML+='<button data-c="last">نفس السابق '+fmtDate(lastExp)+'</button>';
     ch.innerHTML+='<button data-c="none">بدون تاريخ</button><span class="msg" style="align-self:center">لا يوجد يوم؟ اكتب 00</span>';
@@ -10900,8 +10907,30 @@ function openStep(step){
   $('sheet').classList.add('on');
 }
 function closeSheet(){entry=null;$('sheet').classList.remove('on')}
-$('chips').onclick=ev=>{const b=ev.target.closest('button');if(!b||!entry)return;if(b.dataset.c==='last')finish(lastExp);else finish('')};
-$('shX').onclick=()=>{closeSheet();resume()};
+$('chips').onclick=ev=>{const b=ev.target.closest('button');if(!b||!entry)return;const c=b.dataset.c;
+  if(c==='last')finish(lastExp);else if(c==='none')finish('');
+  else if(c==='name'){$('pad').classList.add('hide');$('disp').classList.add('hide');$('nameQ').classList.remove('hide');$('nameQ').value='';$('nameQ').focus();suggestName()}
+  else if(c==='pick'){$('nameQ').blur();$('disp').classList.remove('hide');onCode(b.dataset.v)}};
+// suggestions while typing a code
+function suggest(){
+  const ch=$('chips'),v=entry.val;let html='';
+  if(master&&v.length>=3){const out=[],seen=new Set();
+    for(const k in master.byBar){if(out.length>=3)break;if(k.startsWith(v)||(v.length>=5&&k.endsWith(v))){const c=master.byBar[k].c;if(!seen.has(c)){seen.add(c);out.push([k,c])}}}
+    for(const c in master.byCode){if(out.length>=4)break;if(c.startsWith(v)&&!seen.has(c)){seen.add(c);out.push([c,c])}}
+    html=out.map(([k,c])=>'<button class="sug" data-c="pick" data-v="'+esc(k)+'"><b>'+esc(master.byCode[c]?master.byCode[c].n:c)+'</b><span>'+esc(c)+(k!==c?' · '+esc(k):'')+'</span></button>').join('');}
+  ch.innerHTML=html+'<button data-c="name">🔎 بحث بالاسم</button>';
+}
+function suggestName(){
+  const q=$('nameQ').value.trim().toLowerCase(),ch=$('chips');let html='';
+  if(master&&q.length>=2){const words=q.split(/\s+/);let n=0;
+    for(const c in master.byCode){const it=master.byCode[c];const nm=(it.n||'').toLowerCase();if(words.every(w=>nm.includes(w))){
+      const bar=Object.keys(master.byBar).find(k=>master.byBar[k].c===c)||c;
+      html+='<button class="sug" data-c="pick" data-v="'+esc(bar)+'"><b>'+esc(it.n)+'</b><span>'+esc(c)+(it.u?' · '+esc(it.u):'')+'</span></button>';if(++n>=6)break}}
+    if(!n)html='<div class="msg">لا توجد نتائج</div>';}
+  ch.innerHTML=html;
+}
+$('nameQ').addEventListener('input',suggestName);
+$('shX').onclick=()=>{$('disp').classList.remove('hide');$('nameQ').blur();closeSheet();resume()};
 
 function buildPad(step){
   const extra=step==='qty'?'.':'';
@@ -10918,13 +10947,14 @@ function key(k){
   if(k==='⌫')v=v.slice(0,-1);
   else if(k==='C')v='';
   else if(k==='.'){if(entry.step==='qty'&&!v.includes('.'))v=(v||'0')+'.'}
-  else if(/^[0-9]$/.test(k)){if(entry.step==='qty'){if(v==='0')v='';if(v.length<9)v+=k}else if(v.length<6)v+=k}
-  entry.val=v;drawDisp();
+  else if(/^[0-9]$/.test(k)){if(entry.step==='qty'){if(v==='0')v='';if(v.length<9)v+=k}else if(entry.step==='bar'){if(v.length<20)v+=k}else if(v.length<6)v+=k}
+  entry.val=v;drawDisp();if(entry.step==='bar')suggest();
 }
 function dateMask(d){if(d.length<=2)return d;if(d.length<=4)return d.slice(0,2)+'/'+d.slice(2);return d.slice(0,2)+'/'+d.slice(2,4)+'/'+d.slice(4)}
 function drawDisp(){
   const e=entry,v=e.val;let html;
   if(e.step==='qty')html=v?esc(v):'<span class="ph">'+(opts.one?'1':'0')+'</span>';
+  else if(e.step==='bar')html=v?'<span style="font-size:.8em">'+esc(v)+'</span>':'<span class="ph" style="font-size:.55em">الباركود أو كود الصنف</span>';
   else{
     const slot=i=>v[i]!==undefined?'<span class="dg">'+v[i]+'</span>':(i===v.length?'<span class="dg nx">_</span>':'<span class="dg ph">_</span>');
     html='<span class="dt">'+slot(0)+slot(1)+'<span class="sl">/</span>'+slot(2)+slot(3)+'<span class="sl">/</span><span class="dg fx">2</span><span class="dg fx">0</span>'+slot(4)+slot(5)+'</span>';
@@ -10934,6 +10964,7 @@ function drawDisp(){
 }
 function confirmStep(){
   const e=entry;
+  if(e.step==='bar'){if(!e.val){beepErr();$('err').textContent='اكتب الرقم';return}onCode(e.val);return}
   if(e.step==='qty'){
     let v=e.val;if(v===''&&opts.one)v='1';
     const n=Number(v);if(v===''||!isFinite(n)||n<=0){beepErr();$('err').textContent='أدخل الكمية';return}
@@ -10972,8 +11003,8 @@ document.addEventListener('keydown',ev=>{
 
 // manual barcode entry
 $('btnType').onclick=()=>{
-  const v=prompt('اكتب الباركود أو كود الصنف');if(!v)return;
-  scanning=false;$('cam').classList.add('paused');onCode(normDigits(v));
+  scanning=false;$('cam').classList.add('paused');
+  entry={id:uid(),bar:'',code:'',name:'',unit:'',val:''};openStep('bar');
 };
 
 // ---------- details panel
